@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Utility\Utility.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DiscountsContract\OrderDiscountContract\Query\" />
+    <Folder Include="DiscountsContract\ProductDiscountContract\Quey\" />
+    <Folder Include="OrderAddressContract\Command\" />
+    <Folder Include="OrderAddressContract\Query\" />
+    <Folder Include="PostContract\PackageContract\Command\" />
+    <Folder Include="PostContract\PostCalculateContract\Command\" />
+    <Folder Include="PostContract\PostSettingContract\Query\" />
+    <Folder Include="SellerPackegaContract\Query\" />
+  </ItemGroup>
+
+</Project>

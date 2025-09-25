@@ -1,0 +1,395 @@
+﻿@model Gtm.Contract.ArticleContract.Query.ArticleUiPaging
+@{
+    ViewData["Title"] ="";
+    // ViewData["Title"] = Model.Seo.MetaTitle;
+
+    Layout = "~/Views/Shared/_MagLayout.cshtml";
+} 
+@section SEO {
+    <partial name="_seo" model="@Model.Seo" />  
+}
+ <partial name="_MagBreadCrumb" model="@Model.BreadCrumb" /> 
+
+@section Styles {
+    <style>
+        .article-card {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 30px;
+            background: #fff;
+        }
+        .article-card:hover {
+            transform: translateY(-5px);
+        }
+        .article-img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .article-body {
+            padding: 20px;
+        }
+        .article-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        .article-category {
+            background: #3498db;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        .article-shortdesc {
+            color: #34495e;
+            margin-bottom: 15px;
+        }
+        .read-more {
+            color: #e74c3c;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .search-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .category-list {
+            list-style: none;
+            padding: 0;
+        }
+        .category-list li {
+            margin-bottom: 10px;
+        }
+        .category-list a {
+            color: #2c3e50;
+            text-decoration: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .category-list a:hover {
+            background: #f1f1f1;
+            color: #e74c3c;
+        }
+        .category-count {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        .sub-category {
+            padding-right: 20px;
+            margin-top: 5px;
+        }
+        .page-title {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        .page-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 50px;
+            height: 3px;
+            background: #e74c3c;
+            }
+
+        .fitness-article-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+            .fitness-article-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            }
+
+        .article-image-link {
+            position: relative;
+            display: block;
+            overflow: hidden;
+        }
+
+        .article-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .article-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(231, 76, 60, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .read-more-text {
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .article-image-link:hover .article-overlay {
+            opacity: 1;
+        }
+
+        .article-image-link:hover .article-img {
+            transform: scale(1.05);
+        }
+
+        .article-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .article-title a {
+            color: #2c3e50;
+            transition: color 0.3s ease;
+        }
+
+            .article-title a:hover {
+                color: #e74c3c;
+                text-decoration: none;
+            }
+
+        .read-more-btn {
+            display: inline-block;
+            color: #e74c3c;
+            font-weight: 600;
+            padding: 8px 20px;
+            border: 2px solid #e74c3c;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+            .read-more-btn:hover {
+                background: #e74c3c;
+                color: white;
+                text-decoration: none;
+            }
+
+        .article-category {
+            font-size: 0.8rem;
+            padding: 5px 12px;
+        }
+    </style>
+}
+
+<div class="container fitness-container py-5">
+    <div class="row">
+        <!-- Breadcrumb -->
+        <div class="col-12 mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    @foreach (var item in Model.BreadCrumb)
+                    {
+                        <li class="breadcrumb-item"><a href="@item.Url">@item.Title</a></li>
+                    }
+                </ol>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <h1 class="page-title">@Model.Title</h1>
+            
+            @if (Model.Articles.Any())
+            {
+                <div class="row">
+                    @foreach (var article in Model.Articles)
+                    { 
+
+                        <div class="col-lg-6 mb-5">
+                            <div class="fitness-article-card">
+                                <!-- تصویر مقاله با لینک -->
+                                <a href="/Article/@article.Slug" class="article-image-link">
+                                    <img src="@article.ImageName" alt="@article.ImageAlt" class="article-img">
+                                    <!-- overlay برای افکت hover -->
+                                    <div class="article-overlay">
+                                        <span class="read-more-text">مشاهده مقاله</span>
+                                    </div>
+                                </a>
+                                
+                                <div class="article-body p-4">
+                                    <!-- تاریخ و دسته بندی -->
+                                    <div class="article-meta d-flex justify-content-between mb-3">
+                                        <span class="article-date text-muted">
+                                            <i class="far fa-calendar-alt ml-2"></i>
+                                            @article.CreateDate
+                                        </span>
+                                        <a href="/articles/category/@article.CategorySlug" class="article-category badge badge-danger">
+                                            @article.CategoryTitle
+                                        </a>
+                                    </div>
+
+                                    <!-- عنوان مقاله با لینک -->
+                                    <h3 class="article-title h4 mb-3">
+                                        <a href="/Article/@article.Slug" class="text-dark">@article.Title</a>
+                                    </h3>
+
+                                    <!-- خلاصه مقاله -->
+                                    <p class="article-shortdesc text-secondary mb-4">@article.ShortDescription</p>
+
+                                    <!-- دکمه ادامه مطلب -->
+                                    <div class="text-left">
+                                        <a asp-controller="Article"
+                                           asp-action="Details"
+                                           asp-route-articleSlug="@article.Slug"
+                                           class="read-more-btn">
+                                            ادامه مطلب
+                                            <i class="fas fa-arrow-left mr-2"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                <!-- Pagination -->
+                @if (Model.PageCount > 1)
+                {
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            @if (Model.PageId > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="/articles/@Model.Slug?pageid=@(Model.PageId - 1)&filter=@Model.Filter" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            }
+                            
+                            @for (int i = Model.StartPage; i <= Model.EndPage; i++)
+                            {
+                                <li class="page-item @(i == Model.PageId ? "active" : "")">
+                                    <a class="page-link" href="/articles/@Model.Slug?pageid=@i&filter=@Model.Filter">@i</a>
+                                </li>
+                            }
+                            
+                            @if (Model.PageCount > Model.PageId)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="/articles/@Model.Slug?pageid=@(Model.PageId + 1)&filter=@Model.Filter" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="alert alert-warning text-center">
+                    <h4>مقاله‌ای برای نمایش وجود ندارد</h4>
+                    <p>می‌توانید از طریق جستجو یا دسته‌بندی‌ها مقالات مورد نظر خود را پیدا کنید.</p>
+                </div>
+            }
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="search-box">
+                <h4 class="mb-3">جستجوی مقالات بدنسازی</h4>
+                <form method="get" action="/articles">
+                    <div class="input-group">
+                        <input type="text" name="filter" class="form-control" placeholder="جستجو..." value="@Model.Filter">
+                        <input type="hidden" name="slug" value="@Model.Slug">
+                        <div class="input-group-append">
+                            <button class="btn btn-danger" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="sidebar-widget">
+                <h4 class="widget-title">دسته‌بندی مقالات</h4>
+                <ul class="category-list">
+                    <li><a href="/articles">همه مقالات <span class="category-count">@Model.Categories.Sum(c => c.ArticleCount)</span></a></li>
+                    
+                    @foreach (var category in Model.Categories)
+                    {
+                        <li>
+                            <a href="/articles/@category.Slug">
+                                @category.Title
+                                <span class="category-count">@category.ArticleCount</span>
+                            </a>
+                            
+                            @if (category.Childs.Any())
+                            {
+                                <ul class="sub-category">
+                                    @foreach (var subCategory in category.Childs)
+                                    {
+                                        <li>
+                                            <a href="/articles/@subCategory.Slug">
+                                                @subCategory.Title
+                                                <span class="category-count">@subCategory.ArticleCount</span>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+            
+            <div class="sidebar-widget mt-4">
+                <h4 class="widget-title">پربازدیدترین مقالات</h4>
+                <!-- می‌توانید این بخش را با مقالات پربازدید پر کنید -->
+                <div class="popular-articles">
+                    <div class="popular-article mb-3">
+                        <a href="#" class="d-flex align-items-center">
+                            <img src="/images/fitness/popular1.jpg" alt="مقاله پربازدید" width="80" class="rounded">
+                            <span class="mr-3">تمرینات هوازی برای چربی‌سوزی</span>
+                        </a>
+                    </div>
+                    <div class="popular-article mb-3">
+                        <a href="#" class="d-flex align-items-center">
+                            <img src="/images/fitness/popular2.jpg" alt="مقاله پربازدید" width="80" class="rounded">
+                            <span class="mr-3">برنامه غذایی بدنسازی حجمی</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

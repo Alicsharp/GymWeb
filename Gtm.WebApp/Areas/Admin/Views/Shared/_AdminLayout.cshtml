@@ -1,0 +1,62 @@
+﻿﻿
+<!DOCTYPE html>
+<html>
+<partial name="_AdminHead" />
+<body class="hold-transition skin-blue sidebar-mini">
+    @{
+        var ok = TempData["ok"] != null;
+        var faild = TempData["faild"] != null;
+        var SuccessLogin = TempData["SuccessLogin"] != null;
+    }
+    <div class="loading">
+        <img src="/Images/loading.svg" alt="loading..." />
+    </div>
+    <div class="wrapper">
+        <partial name="_AdminHeader" />
+        <partial name="_AdminSidebar" />
+        <div class="content-wrapper">
+            <section class="content-header">
+                <h1>
+                    @ViewData["Title"]
+                </h1>
+                <ol class="breadcrumb">
+                    <li><a href="/Admin"><i class="fa fa-dashboard"></i> داشبرد</a></li>
+                    <li class="active">@ViewData["Title"]</li>
+                </ol>
+            </section>
+            <section class="content">
+                @RenderBody()
+            </section>
+        </div>
+        <partial name="_AdminFooter" />
+        <div class="modal fade" id="modal-default-ajax">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" id="modal-content-default-ajax">
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+    </div>
+    <partial name="_AdminJs" />
+    @if (ok)
+    {
+        <script>
+            AlertSweetTimer("عملیا ت با موفقیت انجام شد", "success", 4000);
+        </script>
+    }
+    @if (faild)
+    {
+        <script>
+            AlertSweetTimer("عملیات نا موفق !!!", "error", 4000);
+        </script>
+    }
+    @if (SuccessLogin)
+    {
+        <script>
+            AlertSweet("عملیات موفق", "شما با موفقیت وارد سایت شدید .", "success");
+        </script>
+    }
+    @RenderSection("Scripts", false)
+</body>
+</html>

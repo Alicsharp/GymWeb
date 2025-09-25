@@ -1,0 +1,145 @@
+﻿@using Utility.Domain.Enums
+@model Gtm.Contract.ArticleCategoryContract.Query.ArticleCategoryAdminPageQueryModel
+
+@{
+    ViewData["Title"] = Model.PageTitle;
+
+}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <hr />
+                @if (Model.Id > 0)
+                {
+                    <a class="btn btn-success" asp-action="Create" asp-route-parentId="@Model.Id">
+                        <i class=" fa fa-plus mx-2"></i> زیر گروه جدید
+                    </a>
+                }
+                else
+                {
+                    <a class="btn btn-success" asp-action="Create" asp-route-id="@Model.Id">
+                        <i class=" fa fa-plus mx-2"></i> سرگروه جدید
+                    </a>
+                }
+               
+                     <a class="btn btn-info" href="/Admin/Seo/0/@WhereSeo.BlogCategory" target="_blank"> 
+                    Seo همه دسته بندی ها
+                </a>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th> تصویر</th>
+                            <th> عنوان</th>
+                            <th>تاریخ ثبت</th>
+                            <th>تاریخ ویرایش</th>
+                            <th>فعال</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.articleCategories.Count() > 0)
+                        {
+
+                            foreach (var item in Model.articleCategories)
+                            {
+                                <tr id="Deleted_@item.Id">
+                                    <td>
+                                        <img width="100px" src= "@item.ImageName" />
+                                    </td>
+                                    <td>
+                                        @item.Title
+                                    </td>
+                                    <td>
+                                        @item.CreationDate
+                                    </td>
+                                    <td>
+                                        @item.UpdateDate
+                                    </td>
+                                    <td>
+                                        @{
+                                            string title = item.Active ? "غیر فعال شود ؟؟؟" : "فعال شود ؟؟؟";
+                                            string text = item.Active ? "بعد از غیر فعال شدن این دسته بندی و مقاله های آن نمایش داده نمیشود ." : "بعد از فعال شدن این دسته بندی و مقاله های فعال آن نمایش داده میشود";
+                                            string cancel = item.Active ? "فعال بماند" : "غیر فعال بماند";
+                                            string confirm = item.Active ? "غیر فعال شود" : "فعال شود";
+                                        }
+                                        <div class="checkbox-wrapper-49"
+                                             onclick="AjaxSweetNotDelete(
+                                 '@title',
+                                 '@text',
+                                 'question',
+                                 '@confirm',
+                                  '@cancel',
+                                   '/Admin/ArticleCategory/Active/@item.Id')">
+                                            <div class="block">
+                                                <input data-index="pie_@item.Id" id="pie-@item.Id"
+                                                @(item.Active ? "checked" : "") type="checkbox" />
+                                                <label for="pie-@item.Id"></label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (Model.Id == 0)
+                                        {
+                                            <a class="btn btn-info" title="زیر دسته های @item.Title" asp-action="Index" asp-route-Id="@item.Id">
+                                                <i class="fa fa-plus"></i>
+                                            </a>
+                                        }
+                                        @* <a class="btn btn-info" href="/Admin/Seo/@item.Id/@WhereSeo.BlogCategory" target="_blank"> *@
+                                        <a class="btn btn-info" href="/Admin/Seo/@item.Id/ " target="_blank">
+                                            Seo
+                                        </a>
+                                        <a class="btn btn-warning" title="ویرایش @item.Title" asp-action="Edit" asp-route-Id="@item.Id">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th> تصویر</th>
+                            <th> عنوان</th>
+                            <th>تاریخ ثبت</th>
+                            <th>تاریخ ویرایش</th>
+                            <th>فعال</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+
+
+    <script>
+        $(document).ready(function () {
+            $('#example1').DataTable({
+                dom: '<"top"lfB>rt<"bottom"ip><"clear">',
+                buttons: [
+                    'copy', 'excel', 'pdf'
+                ],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fa.json'
+                },
+                responsive: true,
+                autoWidth: false,
+                pageLength: 10,
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "همه"]],
+                initComplete: function () {
+                    // مرکز‌چین کردن محتویات سلول‌ها
+                    this.api().columns().every(function () {
+                        var column = this;
+                        $(column.header()).css('text-align', 'center');
+                    });
+                }
+            });
+        });
+    </script>
+}  

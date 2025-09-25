@@ -1,0 +1,139 @@
+﻿@using Gtm.Contract.EmailContract.MessageUserContract.Query
+@using Utility.Domain.Enums
+ 
+@model MessageUserAdminPaging
+@{
+    ViewData["Title"] = "لیست پیام های تماس با ما";
+}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <div class="col-12">
+                    <form>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>جست و جو بر اساس وضعیت</label>
+                                <select class="form-control" name="status">
+                                    @foreach (var item in Enum.GetValues(typeof(MessageStatus)).Cast<MessageStatus>())
+                                    {
+                                        <option value="@item">@item.ToString().Replace("_", " ")</option>
+                                    }
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>جست و جو بر اساس عنوان</label>
+                                <input type="text" class="form-control" name="filter" value="@Model.Filter">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>تعداد نمایش در هر صفحه</label>
+                                <input type="number" id="chooseImage" class="form-control" name="take" value="@Model.Take">
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label></label>
+                            <button type="submit" class="btn btn-info">
+                                جست و جو
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <hr />
+                <a class="btn btn-success" asp-action="CreateImage">
+                    <i class=" fa fa-plus mx-2"></i> عکس جدید
+                </a>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th> ایمیل</th>
+                            <th> نام کامل</th>
+                            <th> موضوع</th>
+                            <th> شماره تماس</th>
+                            <th> وضعیت</th>
+                            <th>تاریخ ثبت</th>
+                            <th> کاربر</th>
+                            <th> </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Messages.Count() > 0)
+                        {
+                            foreach (var item in Model.Messages)
+                            {
+                                <tr id="Deleted_@item.Id">
+                                    <td>
+                                        @item.Email
+                                    </td>
+                                    <td>
+                                        @item.FullName
+                                    </td>
+                                    <td>
+                                        @item.Subject
+                                    </td>
+                                    <td>
+                                        @item.PhoneNumber
+                                    </td>
+                                    <td>
+                                        @item.Status.ToString().Replace("_", " ")
+                                    </td>
+                                    <td>
+                                        @item.CreationDate
+                                    </td>
+                                    <td>
+                                        @item.UseName
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-ifo" title="جزییات پیام" asp-action="Detail" asp-route-id="@item.Id">
+                                            <i class="fa fa-info"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+
+                </table>
+                <div class="col-12 text-center">
+                    @if (Model.PageCount > 1)
+                    {
+                        <ul class="pagination pagination-sm no-margin pull-right">
+                            @if (Model.PageId > 1)
+                            {
+                                <li><a href="/Admin/Message/Index?pageid=@(Model.PageId - 1)&take=@Model.Take&filter=@Model.Filter&status=@Model.Status">«</a></li>
+                            }
+                            @for (int i = Model.StartPage; i <= Model.EndPage; i++)
+                            {
+                                if (i == Model.PageId)
+                                {
+                                    <li class="bg-info"><a>@i</a></li>
+                                }
+                                else
+                                {
+                                    <li><a href="/Admin/Message/Index?pageid=@i&take=@Model.Take&filter=@Model.Filter&status=@Model.Status">@i</a></li>
+                                }
+                            }
+                            @if (Model.PageId < Model.PageCount)
+                            {
+                                <li><a href="/Admin/Message/Index?pageid=@(Model.PageId + 1)&take=@Model.Take&filter=@Model.Filter&status=@Model.Status">»</a></li>
+                            }
+                            @if (Model.PageCount > Model.EndPage)
+                            {
+                                <li><a href="/Admin/Message/Index?pageid=@Model.PageCount&take=@Model.Take&filter=@Model.Filter&status=@Model.Status">@Model.PageCount</a></li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+}

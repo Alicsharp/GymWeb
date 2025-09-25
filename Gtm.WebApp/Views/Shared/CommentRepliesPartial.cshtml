@@ -1,0 +1,10 @@
+﻿@model List< Gtm.Contract.CommentContract.Query.CommentUiQueryModel>
+
+@foreach (var item in Model)
+{
+    <div class="child-comment">
+        <strong>@item.FullName:</strong>
+        <p>@item.Text</p>
+        <small>@item.CreationDate</small>
+    </div>
+}

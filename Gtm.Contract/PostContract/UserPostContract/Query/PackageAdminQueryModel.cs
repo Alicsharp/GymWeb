@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Gtm.Contract.PostContract.UserPostContract.Query
+{
+    public class PackageAdminQueryModel
+    {
+        public PackageAdminQueryModel(int id, string title, int count, int price, string creationDate,
+            string updateDate, bool active, string imageName)
+        {
+            Id = id;
+            Title = title;
+            Count = count;
+            Price = price;
+            CreationDate = creationDate;
+            UpdateDate = updateDate;
+            Active = active;
+            ImageName = imageName;
+        }
+        public int Id { get; private set; }
+        public string Title { get; private set; }
+        public string ImageName { get; private set; }
+        public int Count { get; private set; }
+        public int Price { get; private set; }
+        public string CreationDate { get; private set; }
+        public string UpdateDate { get; private set; }
+        public bool Active { get; private set; }
+    }
+}
+ 

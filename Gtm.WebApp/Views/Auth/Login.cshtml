@@ -1,0 +1,58 @@
+﻿@model Gtm.Contract.UserContract.Command.RegisterUser
+@{
+    ViewData["Title"] = "ورود به سایت";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+    var SuccessLogout = TempData["SuccessLogout"] != null;
+    var SuccessEditProfile = TempData["SuccessEditProfile"] != null;
+}
+<div class="account-box-title text-right">ورود به سایت</div>
+<div class="account-box-content">
+    <form class="form-account" method="post" asp-action="Login" asp-antiforgery="true">
+        <input type="hidden" asp-for="ReturnUrl" />
+
+        <!-- فیلد شماره موبایل -->
+        <div class="form-account-title">شماره موبایل</div>
+        <div class="form-account-row">
+            <label class="input-label"><i class="now-ui-icons tech_mobile"></i></label>
+            <input class="input-field" type="text" asp-for="Mobile"
+                   placeholder="09123456789"
+                   onkeypress="return isNumber(event)">
+            <span class="text-danger" asp-validation-for="Mobile"></span>
+        </div>
+
+        <!-- فیلد ایمیل -->
+        <div class="form-account-title">آدرس ایمیل</div>
+        <div class="form-account-row">
+            <label class="input-label"><i class="now-ui-icons ui-1_email-85"></i></label>
+            <input class="input-field" type="email" asp-for="Email"
+                   placeholder="example@domain.com">
+            <span class="text-danger" asp-validation-for="Email"></span>
+        </div>
+
+        <!-- دکمه ورود -->
+        <div class="form-account-row form-account-submit">
+            <div class="parent-btn">
+                <button type="submit" class="dk-btn dk-btn-info">
+                    ورود به سایت
+                    <i class="fa fa-sign-in"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @if (SuccessLogout)
+    {
+        <script>
+            AlertSweet("عملیات موفق", "شما با موفقیت از حساب کاربری خارج شدید .", "success");
+        </script>
+    }
+    @if (SuccessEditProfile)
+    {
+        <script>
+            AlertSweet("عملیات موفق", "اطلاعات شما با موفقیت ویرایش شد. با اطلاعات جدید وارد شوید  .", "success");
+        </script>
+    }
+}
+

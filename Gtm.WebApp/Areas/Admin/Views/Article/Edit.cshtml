@@ -1,0 +1,206 @@
+﻿@model Gtm.Contract.ArticleContract.Command.UpdateArticleDto
+@using Gtm.Contract.ArticleCategoryContract.Query
+@using Utility.Appliation.FileService
+
+@{
+    ViewData["Title"] = "ویرایش مقاله";
+    var parents = ViewData["Parents"] as List<ArticleCategoryForAddArticleQueryModel>;
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-success">
+            <form method="post" role="form" enctype="multipart/form-data">
+                <!-- Hidden Fields -->
+                <input type="hidden" asp-for="UserId" />
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="ImageName" />
+
+                <input type="hidden" id="CategoryInputId" value="@Model.CategoryId" />
+                <input type="hidden" id="SubCategoryInputId" value="@Model.SubCategoryId" />
+
+                <div class="box-body">
+                    <div class="row">
+                        <!-- ستون سمت چپ -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Title"></label>
+                                <input class="form-control" asp-for="Title" onchange="makeSlug('Title','Slug')" />
+                                <span class="text-danger" asp-validation-for="Title"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Slug"></label>
+                                <input class="form-control" asp-for="Slug" />
+                                <span class="text-danger" asp-validation-for="Slug"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Writer"></label>
+                                <input class="form-control" asp-for="Writer" />
+                                <span class="text-danger" asp-validation-for="Writer"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="ImageAlt"></label>
+                                <input class="form-control" asp-for="ImageAlt" />
+                                <span class="text-danger" asp-validation-for="ImageAlt"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="ShortDescription"></label>
+                                <textarea class="form-control" asp-for="ShortDescription"></textarea>
+                                <span class="text-danger" asp-validation-for="ShortDescription"></span>
+                            </div>
+                        </div>
+
+                        <!-- ستون سمت راست -->
+                        <div class="col-md-6">
+                            <h3>تصویر فعلی مقاله</h3>
+                            @if (!string.IsNullOrEmpty(Model.ImageName))
+                            {
+                                <img width="300px" id="destinationImage" class="img-thumbnail"
+                                     src="@FileDirectories.ArticleImageDirectory@Model.ImageName" />
+                            }
+
+                            <div class="form-group">
+                                <label asp-for="ImageFile">آپلود تصویر جدید</label>
+                                <input type="file" class="form-control" asp-for="ImageFile" />
+                                <span class="text-danger" asp-validation-for="ImageFile"></span>
+                            </div>
+
+                            <!-- دسته اصلی -->
+                            <div class="form-group">
+                                <label asp-for="CategoryId"></label>
+                                <select id="parentArticleSelect" class="form-control" asp-for="CategoryId"
+                                        onchange="ChooseParentArticleCategory('parentArticleSelect','childArticleSelect')">
+                                    <option value="">انتخاب گروه</option>
+                                    @if (parents != null)
+                                    {
+                                        foreach (var item in parents)
+                                        {
+                                            <option value="@item.Id">@item.Title</option>
+                                        }
+                                    }
+                                </select>
+                                <span class="text-danger" asp-validation-for="CategoryId"></span>
+                            </div>
+
+                            <!-- زیرگروه -->
+                            <div class="form-group">
+                                <label asp-for="SubCategoryId"></label>
+                                <select id="childArticleSelect" class="form-control" asp-for="SubCategoryId">
+                                    <option value="">انتخاب زیر گروه</option>
+                                </select>
+                               @*  <span class="text-danger" asp-validation-for="SubCategoryId"></span> *@
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- متن مقاله -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="Text"></label>
+                                <textarea id="editor1" asp-for="Text" rows="10" cols="80"></textarea>
+                                <span class="text-danger" asp-validation-for="Text"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- دکمه ارسال -->
+                <div class="box-footer">
+                    <button type="submit" class="btn btn-warning">ذخیره تغییرات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // تبدیل Parent/SubCategory از ViewData به JS
+        var parents = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewData["Parents"]));
+
+        // تابع پر کردن SubCategory هنگام تغییر Parent
+        function ChooseParentArticleCategory(parentSelectId, childSelectId) {
+            var parentId = $('#' + parentSelectId).val();
+            var childEle = $('#' + childSelectId);
+            childEle.html('<option value="">انتخاب زیر گروه</option>');
+
+            var parent = parents.find(p => p.Id == parseInt(parentId));
+            if (parent && parent.SubCategories.length > 0) {
+                parent.SubCategories.forEach(function (sub) {
+                    var selected = sub.Id == @Model.SubCategoryId ? 'selected' : '';
+                    childEle.append('<option value="' + sub.Id + '" ' + selected + '>' + sub.Title + '</option>');
+                });
+            }
+        }
+
+        // هنگام لود صفحه، اگر Category انتخاب شده باشد، SubCategory را ست کن
+        $(function () {
+            if ($('#parentArticleSelect').val() != '') {
+                ChooseParentArticleCategory('parentArticleSelect', 'childArticleSelect');
+            }
+
+            // CKEditor
+            CKEDITOR.replace('editor1');
+
+            // wysihtml5
+            $('.textarea').wysihtml5();
+        });
+
+        // تبدیل عنوان به Slug
+        function makeSlug(source, destination) {
+            var titleStr = $('#' + source).val().trim().toLowerCase();
+            titleStr = titleStr.replace(/[^a-z0-9\s-ءاأإآؤئبتثجحخدذرزسشصضطظعغفقكلمنهويةى]/g, '')
+                               .replace(/\s+/g, '-')
+                               .replace(/-+/g, '-');
+            $('#' + destination).val(titleStr);
+        }
+    </script>
+}
+ts {
+    <script>
+        // تبدیل Parent/SubCategory از ViewData به JS
+        var parents = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewData["Parents"]));
+
+        // تابع پر کردن SubCategory هنگام تغییر Parent
+        function ChooseParentArticleCategory(parentSelectId, childSelectId) {
+            var parentId = $('#' + parentSelectId).val();
+            var childEle = $('#' + childSelectId);
+            childEle.html('<option value="">انتخاب زیر گروه</option>');
+
+            var parent = parents.find(p => p.Id == parseInt(parentId));
+            if (parent && parent.SubCategories.length > 0) {
+                parent.SubCategories.forEach(function (sub) {
+                    var selected = sub.Id == @Model.SubCategoryId ? 'selected' : '';
+                    childEle.append('<option value="' + sub.Id + '" ' + selected + '>' + sub.Title + '</option>');
+                });
+            }
+        }
+
+        // هنگام لود صفحه، اگر Category انتخاب شده باشد، SubCategory را ست کن
+        $(function () {
+            if ($('#parentArticleSelect').val() != '') {
+                ChooseParentArticleCategory('parentArticleSelect', 'childArticleSelect');
+            }
+
+            // CKEditor
+            CKEDITOR.replace('editor1');
+
+            // wysihtml5
+            $('.textarea').wysihtml5();
+        });
+
+        // تبدیل عنوان به Slug
+        function makeSlug(source, destination) {
+            var titleStr = $('#' + source).val().trim().toLowerCase();
+            titleStr = titleStr.replace(/[^a-z0-9\s-ءاأإآؤئبتثجحخدذرزسشصضطظعغفقكلمنهويةى]/g, '')
+                               .replace(/\s+/g, '-')
+                               .replace(/-+/g, '-');
+            $('#' + destination).val(titleStr);
+        }
+    </script>
+}

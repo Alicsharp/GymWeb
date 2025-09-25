@@ -1,0 +1,479 @@
+﻿@using Gtm.Contract.ProductContract.Query
+@using Utility.Appliation.FileService
+@using Utility.Domain.Enums
+@model SingleProductUIQueryModel
+
+
+@{
+    ViewData["Title"] = Model.Seo.MetaTitle;
+    var SuccessCreateComment = TempData["SuccessCreateComment"] != null;
+    var FaildCreateComment = TempData["FaildCreateComment"] != null;
+}
+<style>
+
+    .comment-respond {
+        margin-top: 60px;
+    }
+
+    .title-wrap {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 32px;
+    }
+
+    .comment-form p {
+        margin: 0;
+    }
+
+    textarea {
+        height: auto;
+        display: block;
+        padding: 8px 16px;
+        margin-bottom: 24px;
+    }
+
+    input,
+    select,
+    textarea {
+        height: 46px;
+        border: 1px solid #E3E4E8;
+        background-color: #fff;
+        width: 100%;
+        margin-bottom: 24px;
+        padding: 0 12px;
+        -webkit-transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+        transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    }
+
+    label {
+        color: #171821;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-block;
+        vertical-align: middle;
+        margin-bottom: 6px;
+    }
+
+    .title-wrap {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 32px;
+    }
+
+    .title-wrap--line {
+        border-top: 3px solid #888994;
+        padding-top: 32px;
+    }
+
+    .title-wrap--pr {
+        padding-right: 62px;
+    }
+
+    .section-title {
+        margin-bottom: 0;
+        font-size: 21px;
+        display: inline-block;
+        float: right;
+    }
+
+    .comment-list > li:first-child > .comment-body {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .comment-body {
+        margin-bottom: 24px;
+        padding-top: 24px;
+        border-top: 1px solid #E3E4E8;
+    }
+
+    .comment-text {
+        overflow: hidden;
+    }
+
+        .comment-text p {
+            margin-bottom: 10px;
+        }
+
+    .comment-avatar {
+        float: right;
+        margin-left: 20px;
+        display: block;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+        .comment-avatar img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+    .comment-author {
+        font-size: 15px;
+        display: inline-block;
+        margin-bottom: 5px;
+        margin-right: 8px;
+    }
+
+    .comment-metadata {
+        display: inline-block;
+    }
+
+    .comment-date, .comment-edit-link {
+        display: inline-block;
+        margin-bottom: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #83858F;
+    }
+
+    .comment-edit-link {
+        margin-left: 5px;
+        margin-bottom: 0;
+        color: #2D95E3;
+    }
+
+    .comment-reply {
+        color: #171821;
+        font-weight: 600;
+    }
+
+        .comment-reply:hover {
+            color: #2D95E3;
+        }
+
+</style>
+<main class="single-product default">
+    <div class="container">
+        <partial name="_ProductBreadCrumb" model="@Model.BreadCrumb" />
+        <div class="row">
+            <div class="col-12">
+                <article class="product">
+                    <div class="row">
+                        <div class="col-lg-5 col-md-6 col-sm-12">
+                            <div class="product-gallery default">
+                                <img class="zoom-img" id="img-product-zoom" src="@FileDirectories.ProductImageDirectory500@Model.ImageName"
+                                     data-zoom-image="@FileDirectories.ProductImageDirectory@Model.ImageName" width="411" />
+
+                                <div id="gallery_01f" style="width:500px;float:left;">
+                                    <ul class="gallery-items owl-carousel owl-theme" id="gallery-slider">
+                                        <li class="item">
+                                            <a href="#" class="elevatezoom-gallery active" data-update=""
+                                               data-image="@FileDirectories.ProductImageDirectory500@Model.ImageName"
+                                               data-zoom-image="@FileDirectories.ProductImageDirectory@Model.ImageName">
+                                                <img src="@FileDirectories.ProductImageDirectory100@Model.ImageName" width="100" />
+                                            </a>
+                                        </li>
+                                        @if (Model.Galleries.Count() > 0)
+                                        {
+                                            foreach (var item in Model.Galleries)
+                                            {
+                                                <li class="item">
+                                                    <a href="tester" class="elevatezoom-gallery"
+                                                       data-image="@FileDirectories.ProductGalleryImageDirectory500@item.ImageName"
+                                                       data-zoom-image="@FileDirectories.ProductGalleryImageDirectory@item.ImageName">
+                                                        <img src="@FileDirectories.ProductGalleryImageDirectory100@item.ImageName" width="100" />
+                                                    </a>
+                                                </li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                            <ul class="gallery-options">
+                                <li>
+                                    <button class="add-favorites"><i class="fa fa-heart"></i></button>
+                                    <span class="tooltip-option">افزودن به علاقمندی</span>
+                                </li>
+                                <li>
+                                    <button data-toggle="modal" data-target="#myModal">
+                                        <i class="fa fa-share-alt"></i>
+                                    </button>
+                                    <span class="tooltip-option">اشتراک گذاری</span>
+                                </li>
+                            </ul>
+                            <!-- Modal Core -->
+                            <div class="modal-share modal fade" id="myModal" tabindex="-1" role="dialog"
+                                 aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                    aria-hidden="true">
+                                                &times;
+                                            </button>
+                                            <h4 class="modal-title" id="myModalLabel">اشتراک گذاری</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form class="form-share">
+                                                <div class="form-share-title">
+                                                    اشتراک گذاری در شبکه های اجتماعی
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <ul class="btn-group-share">
+                                                            <li>
+                                                                <a href="#" class="btn-share btn-share-twitter"
+                                                                   target="_blank">
+                                                                    <i class="fa fa-twitter"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="#" class="btn-share btn-share-facebook"
+                                                                   target="_blank">
+                                                                    <i class="fa fa-facebook"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="#"
+                                                                   class="btn-share btn-share-google-plus"
+                                                                   target="_blank">
+                                                                    <i class="fa fa-google-plus"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="form-share-title">ارسال به ایمیل</div>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <label class="ui-input ui-input-send-to-email">
+                                                            <input class="ui-input-field" type="email"
+                                                                   placeholder="آدرس ایمیل را وارد نمایید.">
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <button class="btn-primary">ارسال</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <form class="form-share-url default">
+                                                <div class="form-share-url-title">آدرس صفحه</div>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <label class="ui-url">
+                                                            <input class="ui-url-field"
+                                                                   value="https://www.digikala.com">
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Modal Core -->
+                        </div>
+                        <div class="col-lg-7 col-md-6 col-sm-12 center-breakpoint">
+                            <div class="product-title default">
+                                <h1>
+                                    @Model.Title
+                                    @* <span>Apple iPhone X 256GB Mobile Phone</span> *@
+                                </h1>
+                            </div>
+                            <div class="product-directory default">
+                                <ul>
+                                    @foreach (var item in Model.Categories)
+                                    {
+                                        <li>
+                                            <span>دسته ‌بندی</span> :
+                                            <a href="/Shop?slug=@item.Slug" class="btn-link-border">
+                                                @item.Title
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                            @* <div class="product-guaranteed default">
+                                بیش از ۱۸۰ نفر از خریداران این محصول را پیشنهاد داده‌اند
+                            </div> *@
+                            <div class="product-params default">
+                                <ul data-title="ویژگی‌های محصول">
+                                    <li>
+                                        <span>وزن (گرم): </span>
+                                        <span> 256 گیگابایت </span>
+                                    </li>
+                                    @foreach (var item in Model.Features)
+                                    {
+                                        <li>
+                                            <span>@item.Title : </span>
+                                            <span> @item.Value </span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+        <div class="row">
+            <div class="container">
+                <div class="col-12 default no-padding">
+                    <div class="product-tabs default">
+                        <div class="box-tabs default">
+                            <ul class="nav" role="tablist">
+                                <li class="box-tabs-tab">
+                                    <a data-toggle="tab" href="#desc" role="tab"
+                                       aria-expanded="true">
+                                        <i class="now-ui-icons design_bullet-list-67"></i> توضیحات
+                                    </a>
+                                </li>
+                                <li class="box-tabs-tab">
+                                    <a data-toggle="tab" href="#comments" role="tab" aria-expanded="false">
+                                        <i class="now-ui-icons ui-2_chat-round"></i> نظرات کاربران
+                                    </a>
+                                </li>
+                                <li class="box-tabs-tab">
+                                    <a class="active" data-toggle="tab" href="#sell" role="tab" aria-expanded="false">
+                                        <i class="now-ui-icons travel_info"></i> خرید
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="card-body default">
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane fade" id="desc" role="tabpanel"
+                                         aria-expanded="true">
+                                        <article>
+                                            @Html.Raw(Model.Description)
+                                        </article>
+                                    </div>
+                                    <div class="tab-pane fade" id="comments" role="tabpanel"
+                                         aria-expanded="false">
+                                        <div id="respond" class="comment-respond">
+                                            <div class="title-wrap">
+                                                <h5 class="comment-respond__title section-title">دیدگاه شما</h5>
+                                            </div>
+                                            <form id="formComment" class="comment-form" method="post" action="/Comment/Create">
+                                                <input type="hidden" name="ownerId" value="@Model.Id" />
+                                                <input type="hidden" name="commentFor" value="@CommentFor.محصول" />
+                                                <input type="hidden" id="parentIdComment" name="parentId" />
+                                                <p class="comment-form-comment">
+                                                    <label id="labalFullNameComment" for="comment">دیدگاه</label>
+                                                    <textarea id="textComment" name="text" rows="10"></textarea>
+                                                    <span class="text-danger" id="textCommentValid"></span>
+                                                </p>
+
+                                                <div class="row row-20">
+                                                    <div class="col-lg-6">
+                                                        <label for="name">نام کامل: *</label>
+                                                        <input name="fullName" id="fullNameComment" type="text">
+                                                        <span class="text-danger" id="fullNameCommentValid"></span>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <label for="comment">ایمیل: </label>
+                                                        <input name="email" id="emailComment" type="text">
+                                                        <span class="text-danger" id="emailCommentValid"></span>
+                                                    </div>
+                                                </div>
+
+
+                                            </form>
+                                            <p class="comment-form-submit">
+                                                <button type="button" class="btn btn-lg btn-color btn-button"
+                                                        onclick="submitComment()">
+                                                    ارسال دیدگاه
+                                                </button>
+                                            </p>
+
+                                        </div>
+                                        <div class="title-wrap title-wrap--line">
+                                            <h3 class="section-title" id="h3CommentCount"></h3>
+                                        </div>
+                                        <ul class="comment-list" id="CommentParentList">
+                                        </ul>
+                                        <div class="col-12 text-center" id="getMoreCommentDiv">
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade show active" id="sell" role="tabpanel"
+                                         aria-expanded="false">
+                                        <div class="content-section default">
+                                            <div class="table-responsive">
+                                                <table class="table table-order">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th scope="col">فروشنده</th>
+                                                            <th scope="col">آدرس فروشنده</th>
+                                                            <th scope="col">قیمت</th>
+                                                            <th scope="col">قیمت با تخفیف</th>
+                                                            <th scope="col">موجودی</th>
+                                                            <th scope="col">واحد فروش</th>
+                                                            <th scope="col">وزن</th>
+                                                            <th scope="col">خرید</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @if (Model.ProductSells.Count > 0)
+                                                        {
+                                                            foreach (var item in Model.ProductSells)
+                                                            {
+                                                                <tr>
+                                                                    <td>@item.SellerName</td>
+                                                                    <td class="order-code">@item.SellerAddress</td>
+                                                                    <td>@item.Price.ToString("#,0")</td>
+                                                                    <td>@item.PriceAfterOff.ToString("#,0")</td>
+                                                                    <td>@item.Amount</td>
+                                                                    <td>@item.Unit</td>
+                                                                    <td>@item.Weight.ToString("#,0") گرم</td>
+                                                                    <td>
+                                                                        @if (item.Amount > 0)
+                                                                        {
+                                                                            <button class="btn btn-success" onclick="AddToCart('@item.SellerId')">
+                                                                                افزودن به سبد
+                                                                            </button>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <span class="text-danger">موجودی نداریم</span>
+                                                                        }
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr>
+                                                                <td colspan="8" class="text-center text-danger">
+                                                                    موردی برای فروش پیدا نشد .
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+@section Scripts {
+    <script>
+        $(function () {
+            GetComments("@Model.Id", "@CommentFor.محصول.ToString()", 1);
+        });
+    </script>
+    @if (SuccessCreateComment)
+    {
+        <script>
+            AlertSweetTimer("نظر شما با موفقیت اضافه شد و به زودی نمایش داده میشود .", "success", 3000);
+        </script>
+    }
+    @if (FaildCreateComment)
+    {
+        <script>
+            AlertSweetTimer("عملیات نا موفق !! لطفا اطلاعات را با دقت وارد کنید  .", "error", 3000);
+        </script>
+    }
+}

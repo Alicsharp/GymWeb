@@ -1,0 +1,180 @@
+﻿@model  UserPanelSideBarQueryModel
+@inject Utility.Appliation.Auth.IAuthService _auth;
+@using Gtm.Contract.UiContract
+@using Gtm.Contract.UserContract.Query
+@using Utility.Appliation.FileService
+ 
+@inject IHttpContextAccessor _accessor;
+ 
+@{
+    var route = _accessor.HttpContext.Request.Path;
+}
+<div class="profile-page-aside col-xl-3 col-lg-4 col-md-6 center-section order-1">
+    <div class="profile-box">
+        <div class="profile-box-header">
+            <div class="profile-box-avatar">
+                <img src="@FileDirectories.UserImageDirectory100@_auth.GetLoginUserAvatar()" alt="">
+            </div>
+        </div>
+        <div class="profile-box-username">@_auth.GetLoginUserFullName()</div>
+        <div class="profile-box-tabs">
+            <a href="password-change.html" class="profile-box-tab profile-box-tab-access">
+                <i class="now-ui-icons ui-1_lock-circle-open"></i>
+                تغییر رمز
+            </a>
+            <a asp-area="" asp-controller="auth" asp-action="LogOut" class="profile-box-tab profile-box-tab--sign-out">
+                <i class="now-ui-icons media-1_button-power"></i>
+                خروج از حساب
+            </a>
+        </div>
+    </div>
+    <div class="responsive-profile-menu show-md">
+        <div class="btn-group">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                <i class="fad fa-bars"></i>
+                حساب کاربری شما
+            </button>
+            <div class="dropdown-menu dropdown-menu-right text-right">
+                <a href="/UserPanel" class="dropdown-item
+               @(route.ToString().ToLower() == "/userpanel" ||
+                route.ToString().ToLower() == "/userpanel/home/index" ? "active-menu" : "")">
+                    <i class="now-ui-icons users_single-02"></i>
+                    پروفایل
+                </a>
+                @if (Model.IsUserAdmin)
+                {
+                    <a href="/UserPanel/PostOrder/orders" class="dropdown-item">
+                        <i class="now-ui-icons shopping_basket"></i>
+                        پنل ادمین
+                    </a>
+                }
+                @if (Model.HaveUserSeller)
+                {
+                    <a href="/UserPanel/Seller/Index" class="dropdown-item
+               @(route.ToString().ToLower().Contains("/userpanel/seller")  ? "active-menu" : "")">
+                        <i class="now-ui-icons shopping_basket"></i>
+                        فروشگاه های شما
+                    </a>
+                }
+                @if (Model.HaveUserOrderPost)
+                {
+                    <a href="/UserPanel/PostOrder/orders" class="dropdown-item
+               @(route.ToString().ToLower().Contains("/userpanel/postorder/orders")  ? "active-menu" : "")">
+                        <i class="now-ui-icons shopping_basket"></i>
+                        سفارش های Api پست
+                    </a>
+                    <a href="/UserPanel/PostOrder/UserPost" class="dropdown-item
+               @(route.ToString().ToLower().Contains("/userpanel/postorder/userpost")  ? "active-menu" : "")">
+                        <i class="now-ui-icons shopping_basket"></i>
+                        راهنمای Api پست
+                    </a>
+                }
+                <a href="/UserPanel/Wallet" class="dropdown-item
+            @(route.ToString().ToLower().Contains("/userpanel/wallet")  ? "active-menu" : "")">
+                    <i class="now-ui-icons files_single-copy-04"></i>
+                    کیف پول
+                </a>
+                <a href="/UserPanel/Wallet/Transactions" class="dropdown-item
+            @(route.ToString().ToLower().Contains("/userpanel/wallet/transactions")  ? "active-menu" : "")">
+                    <i class="now-ui-icons files_single-copy-04"></i>
+                    تراکنش ها
+                </a>
+                <a href="/UserPanel/Address" class="dropdown-item
+            @(route.ToString().ToLower().Contains("/userpanel/address")  ? "active-menu" : "")">
+                    <i class="now-ui-icons files_single-copy-04"></i>
+                    آدرس های شما
+                </a>
+                @*  <a href="profile-favorites.html" class="dropdown-item">
+                <i class="now-ui-icons ui-2_favourite-28"></i>
+                لیست علاقمندی ها
+                </a>
+                <a href="profile-personal-info.html" class="dropdown-item">
+                <i class="now-ui-icons business_badge"></i>
+                اطلاعات شخصی
+                </a> *@
+            </div>
+        </div>
+    </div>
+    <div class="profile-menu hidden-md">
+        <div class="profile-menu-header">حساب کاربری شما</div>
+        <ul class="profile-menu-items">
+            <li>
+                <a href="/UserPanel" class="@(route.ToString().ToLower() == "/userpanel" ||
+                route.ToString().ToLower() == "/userpanel/home/index" ? "active" : "")">
+                    <i class="now-ui-icons users_single-02"></i>
+                    پروفایل
+                </a>
+            </li>
+            @if (Model.IsUserAdmin)
+            {
+                <li>
+                    <a href="/Admin">
+                        <i class="now-ui-icons shopping_basket"></i>
+                        پنل ادمین
+                    </a>
+                </li>
+            }
+            @if (Model.HaveUserSeller)
+            {
+                <li>
+                    <a href="/UserPanel/Seller/Index" class="
+                 @(route.ToString().ToLower().Contains("/userpanel/seller")  ? "active" : "")">
+                        <i class="now-ui-icons shopping_basket"></i>
+                        فروشگاه های شما
+                    </a>
+                </li>
+            }
+            @if (Model.HaveUserOrderPost)
+            {
+                <li>
+                    <a href="/UserPanel/PostOrder/orders" class="
+                 @(route.ToString().ToLower().Contains("/userpanel/postorder/orders")  ? "active" : "")">
+                        <i class="now-ui-icons shopping_basket"></i>
+                        سفارش های Api پست
+                    </a>
+                </li>
+                <li>
+                    <a href="/UserPanel/PostOrder/UserPost" class="
+                 @(route.ToString().ToLower().Contains("/userpanel/postorder/userpost")  ? "active" : "")">
+                        <i class="now-ui-icons shopping_basket"></i>
+                        راهنمای Api پست
+                    </a>
+                </li>
+            }
+            <li>
+                <a href="/UserPanel/Wallet" class="
+                 @(route.ToString().ToLower().Contains("/userpanel/wallet")  ? "active" : "")">
+                    <i class="now-ui-icons files_single-copy-04"></i>
+                    کیف پول
+                </a>
+            </li>
+            <li>
+                <a href="/UserPanel/Wallet/Transactions" class="
+                 @(route.ToString().ToLower().Contains("/userpanel/wallet/transactions")  ? "active" : "")">
+                    <i class="now-ui-icons files_single-copy-04"></i>
+                    تراکنش ها
+                </a>
+            </li>
+            <li>
+                <a href="/UserPanel/Address" class="
+                 @(route.ToString().ToLower().Contains("/userpanel/address")  ? "active" : "")">
+                    <i class="now-ui-icons files_single-copy-04"></i>
+                    آدرس های شما
+                </a>
+            </li>
+            @* <li>
+            <a href="profile-favorites.html">
+            <i class="now-ui-icons ui-2_favourite-28"></i>
+            لیست علاقمندی ها
+            </a>
+            </li>
+            <li>
+            <a href="profile-personal-info.html">
+            <i class="now-ui-icons business_badge"></i>
+            اطلاعات شخصی
+            </a>
+            </li> *@
+        </ul>
+    </div>
+</div>

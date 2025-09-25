@@ -1,0 +1,206 @@
+﻿@model Gtm.Contract.ArticleContract.Query.SingleArticleQueryModel
+@using Utility.Domain.Enums
+@{
+    // ViewData["Title"] = Model.Seo.MetaTitle;
+    Layout = "~/Views/Shared/_MagLayout.cshtml";
+    var SuccessCreateComment = TempData["SuccessCreateComment"] != null;
+    var FaildCreateComment = TempData["FaildCreateComment"] != null;
+}
+
+<div class="main-container container" id="main-container">
+    <!-- Content -->
+    <div class="row">
+        <div class="col-12 blog__content mb-5">
+            <div class="content-box">
+                <!-- Article Header -->
+                <article class="entry mb-0">
+                    <div class="single-post__entry-header entry__header">
+                        <a href="/Blogs/@Model.CategorySlug"
+                           class="entry__meta-category entry__meta-category--label entry__meta-category--green">
+                            @Model.CategoryTitle
+                        </a>
+
+                        <h1 class="single-post__entry-title" style="font-size: 1.8rem; font-weight: 700; color: #333; margin-bottom: 15px;">
+                            @Model.Title
+                        </h1>
+
+                        <div class="entry__meta-holder d-flex justify-content-between align-items-center">
+                            <ul class="entry__meta list-unstyled mb-0">
+                                <li class="entry__meta-author">
+                                    <i class="fas fa-user me-1"></i>
+                                    <span style="color: #6c757d;">نویسنده:</span>
+                                   <a>@Model.Writer</a>  
+                                </li>
+                                <li class="entry__meta-date" style="color: #6c757d;">
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    @Model.CreationDate
+                                </li>
+                            </ul>
+
+                            <ul class="entry__meta list-unstyled mb-0">
+                                <li class="entry__meta-views" style="color: #6c757d;">
+                                    <i class="fas fa-eye"></i>
+                                    <span>@Model.VisitCount.ToString("#,0")</span>
+                                </li>
+                                <li class="entry__meta-comments" style="color: #6c757d;">
+                                    <i class="fas fa-comment me-1" id="iCommentCount"></i>
+                                    <span id="commentCountBadge"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Article Image (کوچک شده) -->
+                    <div class="entry__img-holder rounded-3 overflow-hidden my-4" style="max-width: 600px; margin-left: auto; margin-right: auto;">
+                        <img src="@Model.ImageName"
+                             alt="@Model.ImageAlt"
+                             class="entry__img w-100" style="box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                    </div>
+
+                    <!-- Article Content (فونت بهبود یافته) -->
+                    <div class="entry__article-wrap p-4 rounded-3" style="background-color: #f9f9f9; border-right: 3px solid #4e9ae1;">
+                        <div class="entry__article" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.05rem; line-height: 1.8; text-align: justify;">
+                            @Html.Raw(Model.Description)
+                        </div>
+                    </div>
+
+                    <!-- Social Sharing -->
+                    <div class="entry__share mt-4 pt-3 border-top">
+                        <div class="sticky-col">
+                            <div class="d-flex align-items-center">
+                                <span class="me-2" style="color: #6c757d;">اشتراک گذاری:</span>
+                                <div class="socials">
+                                    <a class="social" style="background-color: #3b5998; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 5px; color: white; text-decoration: none;"
+                                       href="#" title="facebook" target="_blank" aria-label="facebook">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                    <a class="social" style="background-color: #1da1f2; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 5px; color: white; text-decoration: none;"
+                                       href="#" title="twitter" target="_blank" aria-label="twitter">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                    <a class="social" style="background-color: #0088cc; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 5px; color: white; text-decoration: none;"
+                                       href="#" title="telegram" target="_blank" aria-label="telegram">
+                                        <i class="fab fa-telegram-plane"></i>
+                                    </a>
+                                    <a class="social" style="background-color: #0077b5; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 5px; color: white; text-decoration: none;"
+                                       href="#" title="linkedin" target="_blank" aria-label="linkedin">
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Comments Section -->
+                <div class="mt-5 pt-4 border-top">
+                    <!-- Comment Form -->
+                    <div id="respond" class="comment-respond p-4 rounded-3" style="background-color: white; border: 1px solid #eaeaea;">
+                        <div class="title-wrap mb-3">
+                            <h3 class="comment-respond__title" style="font-weight: 700; color: #333;">
+                                <i class="fas fa-edit me-2"></i>افزودن دیدگاه
+                            </h3>
+                            <p class="mt-2" style="color: #6c757d;">نشانی ایمیل شما منتشر نخواهد شد. بخش‌های موردنیاز علامت‌گذاری شده‌اند *</p>
+                        </div>
+                        <form id="formComment" class="comment-form row g-3" method="post" action="/Comment/Create">
+                            <input type="hidden" asp-for="ParentId" value="@Model.Id" />
+                            <input type="hidden" name="commentFor" value="@CommentFor.مقاله" />
+
+                            <div class="col-12">
+                                <label for="textComment" class="form-label" style="font-weight: 500;">دیدگاه شما *</label>
+                                <textarea id="textComment" name="text" class="form-control"
+                                          style="padding: 12px; border-radius: 6px; border: 1px solid #ced4da;"
+                                          rows="5" placeholder="نظر خود را بنویسید..."></textarea>
+                                <div class="text-danger mt-1" id="textCommentValid"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="fullNameComment" class="form-label" style="font-weight: 500;">نام کامل *</label>
+                                <input name="fullName" id="fullNameComment"
+                                       class="form-control" type="text" placeholder="نام و نام خانوادگی"
+                                       style="padding: 12px; border-radius: 6px; border: 1px solid #ced4da;">
+                                <div class="text-danger mt-1" id="fullNameCommentValid"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="emailComment" class="form-label" style="font-weight: 500;">ایمیل *</label>
+                                <input name="email" id="emailComment"
+                                       class="form-control" type="email" placeholder="example@domain.com"
+                                       style="padding: 12px; border-radius: 6px; border: 1px solid #ced4da;">
+                                <div class="text-danger mt-1" id="emailCommentValid"></div>
+                            </div>
+
+                            <div class="col-12 text-end mt-3">
+                                <button type="button" onclick="submitComment()"
+                                        class="btn btn-primary px-4 py-2" style="background-color: #4361ee; border: none; border-radius: 6px;">
+                                    <i class="fas fa-check me-2"></i>ارسال دیدگاه
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Comments List -->
+                    <div class="mt-5 pt-4">
+                        <div class="title-wrap mb-4">
+                            <h3 class="section-title position-relative" style="font-weight: 700;">
+                                <span style="background-color: white; padding-right: 15px;">دیدگاه‌ها</span>
+                                <span style="position: absolute; top: 50%; right: 0; width: 100%; height: 1px; background-color: #dee2e6; z-index: -1;"></span>
+                                <span id="commentCount" class="badge" style="background-color: #4361ee; font-size: 0.9rem; margin-right: 10px;">0 دیدگاه</span>
+                            </h3>
+                        </div>
+                        <ul class="comment-list list-unstyled" id="CommentParentList">
+                            <!-- Comments will be loaded here -->
+                        </ul>
+
+                        <!-- Load More Button -->
+                        <div class="text-center mt-4" id="getMoreCommentDiv">
+                            <button id="loadMoreComments" class="btn btn-outline-primary px-4" style="display: none; border-radius: 6px;">
+                                <i class="fas fa-sync-alt me-2"></i>بارگذاری بیشتر
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            GetComments("@Model.Id", "@CommentFor.مقاله.ToString()", 1);
+
+            // Update comment count badge
+            // updateCommentCount(Model.CommentsCount);
+        });
+
+        function updateCommentCount(count) {
+            $('#iCommentCount').next('span').text(count);
+            $('#commentCount').text(count + " دیدگاه");
+        }
+    </script>
+
+    @if (SuccessCreateComment)
+    {
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'دیدگاه ثبت شد!',
+                text: 'نظر شما با موفقیت ثبت شد و پس از تایید نمایش داده خواهد شد',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        </script>
+    }
+
+    @if (FaildCreateComment)
+    {
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'خطا!',
+                text: 'مشکلی در ثبت نظر پیش آمد. لطفاً مجدداً تلاش کنید',
+                timer: 3000
+            });
+        </script>
+    }
+}

@@ -1,0 +1,108 @@
+﻿﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="">
+   @await Component.InvokeAsync("Fav") 
+    <title>@ViewData["Title"]</title>
+      @RenderSection("SEO", false)  
+    <link rel="stylesheet" href="/MagAssets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/Assets/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/MagAssets/css/font-icons.css" />
+    <link rel="stylesheet" href="/MagAssets/css/style.css" />
+    <script src="/MagAssets/js/lazysizes.min.js"></script>
+</head>
+<body class="bg-light style-default style-rounded">
+    <div class="loader-mask">
+        <div class="loader">
+            <div></div>
+        </div>
+    </div>
+    <div class="content-overlay"></div>
+      @await Component.InvokeAsync("MenuArticleMobile")   
+    <main class="main oh" id="main">
+        @await Component.InvokeAsync("ArticleSocial")
+        <header class="nav">
+
+            <div class="nav__holder nav--sticky">
+                <div class="container relative">
+                    <div class="flex-parent">
+
+                        <!-- Side Menu Button -->
+                        <button class="nav-icon-toggle d-lg-none" id="nav-icon-toggle" aria-label="Open side menu">
+                            <span class="nav-icon-toggle__box">
+                                <span class="nav-icon-toggle__inner"></span>
+                            </span>
+                        </button>
+                        @await Component.InvokeAsync("LogoArticle")
+                        @await Component.InvokeAsync("MenuArticle")
+                        <!-- Nav Right -->
+                        <div class="nav__right">
+
+                            <!-- Search -->
+                            <div class="nav__right-item nav__search">
+                                <a href="#" class="nav__search-trigger" id="nav__search-trigger">
+                                    <i class="ui-search nav__search-trigger-icon"></i>
+                                </a>
+                                <div class="nav__search-box" id="nav__search-box">
+                                    <form class="nav__search-form" action="/Blogs">
+                                        <input type="text" name="filter" placeholder="جستجو مقالات" class="nav__search-input">
+                                        <button type="submit" class="search-button btn btn-lg btn-color btn-button">
+                                            <i class="ui-search nav__search-icon"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div> <!-- end nav right -->
+
+                    </div> <!-- end flex-parent -->
+                </div> <!-- end container -->
+
+            </div>
+        </header>
+        @RenderBody()
+
+        <!-- Footer -->
+        <footer class="footer footer--light">
+            <div class="copyright">
+                <div class="container">
+                    <p class="text-center">
+                        طراحی توسط :
+                        <a href="https://codeyad.com">
+                            کدیاد
+                        </a>
+                    </p>
+                </div>
+            </div> <!-- end container -->
+        </footer> <!-- end footer -->
+
+        <div id="back-to-top">
+            <a href="#top" aria-label="Go to top"><i class="ui-arrow-up"></i></a>
+        </div>
+
+    </main>
+
+
+    <!-- jQuery Scripts -->
+    <script src="/MagAssets/js/jquery.min.js"></script>
+    <script src="/MagAssets/js/bootstrap.min.js"></script>
+    <script src="/MagAssets/js/easing.min.js"></script>
+    <script src="/MagAssets/js/owl-carousel.min.js"></script>
+    <script src="/MagAssets/js/flickity.pkgd.min.js"></script>
+    <script src="/MagAssets/js/twitterFetcher_min.js"></script>
+    <script src="/MagAssets/js/jquery.sticky-kit.min.js"></script>
+    <script src="/MagAssets/js/jquery.newsTicker.min.js"></script>
+    <script src="/MagAssets/js/modernizr.min.js"></script>
+    <script src="/MagAssets/js/scripts.js"></script>
+    <script src="/js/jquery.unobtrusive-ajax.js"></script>
+    <script src="/js/sweetalert2.js"></script>
+    <script src="/js/site.js"></script>
+    <script src="/js/blog.js"></script>
+    @RenderSection("Scripts", false)
+    @RenderSection("Styles", false)
+</body>
+
+</html>

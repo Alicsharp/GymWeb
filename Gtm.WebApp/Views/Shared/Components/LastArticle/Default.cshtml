@@ -1,0 +1,9 @@
+﻿@using Gtm.Contract.SiteContract.SiteSettingContract.Query
+ @model  LogoForUiQueryModel
+
+@if (!string.IsNullOrEmpty(Model.LogoName))
+{
+    <a href="/" class="logo">
+        <img class="logo__img" src="@Model.LogoName" @(string.IsNullOrEmpty(Model.LogoAlt) ? "" : $"alt={Model.LogoAlt}")>
+    </a>
+}

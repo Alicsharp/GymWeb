@@ -1,0 +1,189 @@
+﻿@using Gtm.Contract.PostContract.PackageContract.Query
+@model  PackageUiPageQueryModel
+ 
+@{
+    ViewData["Title"] = Model.Seo.MetaTitle ?? "سئو";
+    var OrderNotExist = TempData["OrderNotExist"] != null;
+}
+<main class="search-page default">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                <partial name="_BreadCrumb" model="@Model.BreadCrumbs" />
+                <h3 class="text-center my-2">
+                    @Model.Title
+                </h3>
+
+                <div class="p-2 mb-3 text-center">
+                    @Html.Raw(Model.Description)
+                    <hr />
+                    <p>
+                        میتوانید API پست ما رو تست کنید .
+
+                    </p>
+                    <div class="row alert alert-danger text-center">
+                        <h3>
+                            فقط یک بار میتوانید از تست Api ما استفاده کنید که 50 عدد درخواست برای شما ثبت میشود .
+                        </h3>
+                    </div>
+                    <div class="parent-btn">
+                        <a asp-area="UserPanel" asp-controller="PostOrder"
+                           asp-action="UserPost"
+                           class="dk-btn dk-btn-info">
+                            تست Api
+                        </a>
+                    </div>
+                </div>
+
+                <div class="listing default">
+                    <div class="tab-content default text-center">
+                        <div class="tab-pane active" id="related" role="tabpanel" aria-expanded="true">
+                            <div class="container no-padding-right">
+                                @if (Model.Packages.Count() > 0)
+                                {
+                                    <ul class="row listing-items">
+                                        @foreach (var item in Model.Packages)
+                                        {
+                                            <li class="col-lg-4 col-md-6 col-12 no-padding">
+                                                <div class="product-box">
+                                                    <div class="product-box-content-row mb-3">
+                                                        <div class="product-box-title">
+                                                            <h3>
+                                                                @item.Title
+                                                            </h3>
+                                                        </div>
+                                                    </div>
+                                                    <a class="product-box-img">
+                                                        <img src="@item.ImageName" alt="@item.ImageAlt">
+                                                    </a>
+                                                    <div class="product-box-content">
+                                                        <div class="product-box-row product-box-row-price">
+                                                            <div class="price">
+                                                                <div class="price-value">
+                                                                    <div class="price-value-wrapper">
+                                                                        @item.Count.ToString("#,0")
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <span>تعداد درخواست : </span>
+                                                        </div>
+                                                        <div class="product-box-row product-box-row-price">
+                                                            <div class="price">
+                                                                <div class="price-value">
+                                                                    <div class="price-value-wrapper">
+                                                                        @item.Price.ToString("#,0")
+                                                                        <span class="price-currency">تومان</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <span>قیمت : </span>
+                                                        </div>
+                                                        <p>
+                                                            @item.Description
+                                                        </p>
+                                                        <div class="parent-btn">
+                                                            <a asp-area="UserPanel" asp-controller="PostOrder"
+                                                               asp-action="Create" asp-route-id="@item.Id"
+                                                               class="dk-btn dk-btn-info">
+                                                                خرید
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <h3 class="text-center my-4">
+                محاسبه مرسوله پستی
+            </h3>
+            <div class="content-section default">
+
+                <div class="row">
+                    <div class="col-sm-12 col-md-6">
+                        <div class="form-account-title">انتخاب استان مبدا *</div>
+                        <div class="form-account-row">
+                            <Select class="input-field text-right"
+                                    id="SourceStateId" onchange="GetCitiesForSelectBox('SourceStateId','SourceCityId')">
+                                <option value=0>انتخاب استان</option>
+                            </Select>
+                        </div>
+                        <span class="text-danger" id="SourceStateIdValid"></span>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                        <div class="form-account-title">انتخاب شهر مبدا *</div>
+                        <div class="form-account-row">
+                            <Select class="input-field text-right" id="SourceCityId">
+                            </Select>
+                        </div>
+                        <span class="text-danger" id="SourceCityIdValid"></span>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                        <div class="form-account-title">انتخاب استان مقصد *</div>
+                        <div class="form-account-row">
+                            <Select class="input-field text-right"
+                                    id="DestinationStateId" onchange="GetCitiesForSelectBox('DestinationStateId','DestinationCityId')">
+                                <option value=0>انتخاب استان</option>
+                            </Select>
+                        </div>
+                        <span class="text-danger" id="DestinationStateIdValid"></span>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                        <div class="form-account-title">انتخاب شهر مقصد *</div>
+                        <div class="form-account-row">
+                            <Select class="input-field text-right" id="DestinationCityId">
+                            </Select>
+                        </div>
+                        <span class="text-danger" id="DestinationCityIdValid"></span>
+                    </div>
+                    <div class="col-sm-12 col-md-12">
+                        <div class="form-account-title">وزن مرسوله پستی (بر اساس گرم) *</div>
+                        <div class="form-account-row">
+                            <input class="input-field text-right" type="text" id="weight"
+                                   onkeypress="return isNumber(event)">
+                        </div>
+                        <span class="text-danger" id="weightValid"></span>
+                    </div>
+                </div>
+                <div class="col-12 text-center">
+                    <button type="button" onclick="CalculatePost()" class="btn btn-warning btn-lg">محاسبه شود</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <h3 class="text-center my-4">
+                محاسبه مرسوله پستی
+            </h3>
+            <div class="content-section default" id="calculatePostDiv">
+            </div>
+        </div>
+    </div>
+</main>
+@section Scripts {
+    <script>
+        $(function () {
+            GetStatesForSelectBox('SourceStateId');
+            GetStatesForSelectBox('DestinationStateId');
+            $("select#DestinationStateId").select2();
+            $("select#SourceStateId").select2();
+            $("select#SourceCityId").select2();
+            $("select#DestinationCityId").select2();
+        })
+    </script>
+    @if (OrderNotExist)
+    {
+        <script>
+            AlertSweetTimer("فاکتور پرداخت نشده ای برای api پست ندارید . از این صفحه یه بسته برای پست انتخاب کنید .", "warning", 3000)
+        </script>
+    }
+}

@@ -1,0 +1,163 @@
+﻿@using Utility.Domain.Enums
+@model Gtm.Contract.PostContract.StateContract.Query.StateDetailQueryModel
+
+@{
+    ViewData["Title"] = "شهر های استان " + Model.Name;
+    var ChooseState = TempData["ChooseState"] != null;
+}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <hr />
+                <a class="btn btn-success" asp-action="Create" asp-route-id="@Model.Id">
+                    <i class=" fa fa-plus mx-2"></i> شهر جدید برای @Model.Name
+                </a>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th> </th>
+                            <th> شهر  </th>
+                            <th>وضعیت</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Cities.Count() > 0)
+                        {
+                            foreach (var item in Model.Cities)
+                            {
+                                <tr id="Deleted_@item.Id">
+                                    <td>
+                                        @item.Id
+                                    </td>
+                                    <td>
+                                        @item.Title
+                                    </td>
+                                    <td>
+                                        @item.Status
+                                    </td>
+                                    <td>
+                                        @item.CreationDate
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-warning" title="ویرایش @item.Title" asp-action="Edit" asp-route-id="@item.Id">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        @if (item.Status != CityStatus.شهرستان_معمولی)
+                                        {
+                                            <a class="btn btn-info" onclick="AjaxSweetRefresh(
+                                 'شهرستان معمولی شود',
+                                 'شهرستان معمولی شود',
+                                 'question',
+                                 'شهرستان معمولی شود',
+                                  'انصراف',
+                                   '/Admin/City/Status/@item.Id?status=@CityStatus.شهرستان_معمولی')">
+                                                شهرستان معمولی
+                                            </a>
+                                        }
+                                        @if (item.Status != CityStatus.تهران && Model.Name.Trim() == "تهران")
+                                        {
+                                            <a class="btn btn-default" onclick="AjaxSweetRefresh(
+                                 'تهران شود',
+                                 'اگر این شهرستان به عنوان تهران معرفی شود . هر شهرستان دیگری که تهران باشد به وضعیت شهرستان معمولی باز میگردد',
+                                 'question',
+                                 'تهران شود',
+                                  'انصراف',
+                                   '/Admin/City/Status/@item.Id?status=@CityStatus.تهران')">
+                                                تهران ؟
+                                            </a>
+                                        }
+                                        @if (item.Status != CityStatus.مرکز_استان && Model.Name.Trim() != "تهران")
+                                        {
+                                            <a class="btn btn-primary" onclick="AjaxSweetRefresh(
+                                 'مرکز استان شود',
+                                 'اگر این شهرستان به عنوان مرکز @Model.Name معرفی شود . هر شهرستان دیگری که مرکز @Model.Name  باشد به وضعیت شهرستان معمولی باز میگردد',
+                                 'question',
+                                 'مرکز استان  شود',
+                                  'انصراف',
+                                   '/Admin/City/Status/@item.Id?status=@CityStatus.مرکز_استان')">
+                                                مرکز استان
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th> </th>
+                            <th> شهر  </th>
+                            <th>وضعیت</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                استان های هم جوار
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <form method="post" action="/Admin/State/ChangeClose/@Model.Id">
+                    <button type="submit" class="btn btn-success">
+                        تغییر استان های هم جوار
+                    </button>
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th> </th>
+                                <th> استان  </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.States.Count() > 0)
+                            {
+                                List<string> states = new List<string>();
+                                if (string.IsNullOrEmpty(Model.CloseStates) == false)
+                                    states = Model.CloseStates.Split("-").ToList();
+                                foreach (var item in Model.States)
+                                {
+                                    if (item.Id != Model.Id)
+                                    {
+                                        <tr id="Deleted_@item.Id">
+                                            <td>
+                                                @item.Id
+                                            </td>
+                                            <td>
+                                                @item.title
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" name="stateCloses" value="@item.Id"
+                                                       checked=@(states.Any(s=> s == item.Id.ToString()) ? "checked" : false) />
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @if (ChooseState)
+    {
+        <script>
+            AlertSweetTimer(" لطفا استان های هم جوار را انتخاب کنید   !!!", "error", 4000);
+        </script>
+    }
+}

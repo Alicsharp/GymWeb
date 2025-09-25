@@ -1,0 +1,22 @@
+﻿
+using Gtm.Application.SiteServiceApp.BannerApp.Query;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Utility.Domain.Enums;
+
+namespace Gtm.WebApp.ViewComponents
+{
+    public class LeftBanerArticleViewComponent : ViewComponent
+    {
+        private readonly IMediator _mediator;
+        public LeftBanerArticleViewComponent(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+        public async Task<IViewComponentResult> InvokeAsync()
+        {
+            var model = await _mediator.Send(new GetForUiQuery(1, BanerState.بنر_تکی_وبلاگ_280x230));
+            return View(model.Value);
+        }
+    }
+}

@@ -1,0 +1,8 @@
+﻿@using Gtm.Contract.SiteContract.SiteSettingContract.Query
+@model  FavIconForUiQueryModel
+
+
+@if (!string.IsNullOrEmpty(Model.FavIcon))
+{
+    <link rel="icon" type="image/png" href="@Model.FavIcon">
+}

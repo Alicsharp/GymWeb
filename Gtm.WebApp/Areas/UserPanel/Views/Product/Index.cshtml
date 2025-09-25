@@ -1,0 +1,109 @@
+﻿@using Gtm.Contract.ProductSellContract.Query
+@using Utility.Appliation.FileService
+@model SellerProductPageUserPanelQueryModel
+@{
+    ViewData["Title"] = "محصولات " + Model.SellerTitle;
+}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="col-12">
+            <h1 class="title-tab-content">@ViewData["Title"].ToString()</h1>
+            <a class="btn btn-success" asp-action="Create" asp-route-id="@Model.SellerId">
+                محصول جدید
+            </a>
+        </div>
+        <div class="content-section default">
+            <div class="table-responsive">
+                <table class="table table-order">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">عکس</th>
+                            <th scope="col">عنوان</th>
+                            <th scope="col"> واحد فروش</th>
+                            <th scope="col">موجودی</th>
+                            <th scope="col">وزن</th>
+                            <th scope="col">تعداد فروش</th>
+                            <th scope="col">فعال</th>
+                            <th scope="col">قیمت</th>
+                            <th scope="col">تخفیف ادمین</th>
+                            <th scope="col">تخفیف شما</th>
+                            <th scope="col">قیمت بعد از تخفیف</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Products.Count() > 0)
+                        {
+                            foreach (var item in Model.Products)
+                            {
+
+                                <tr id="tr_@item.Id">
+                                    <td>
+                                        <img src="@FileDirectories.ProductImageDirectory100@item.ProductImageName" />
+                                    </td>
+                                    <td>
+                                        @item.ProductTitle
+                                    </td>
+                                    <td>@item.Unit</td>
+                                    <td>@item.Amount</td>
+                                    <td>@item.Weight</td>
+                                    <td>@item.SellCount</td>
+                                    <td>
+                                        @if (item.Active)
+                                        {
+                                            <span class="text-success">فعال</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-danger">غیر فعال</span>
+                                        }
+                                    </td>
+                                    <td>@item.Price.ToString("#,0")</td>
+                                    <td>@item.ProductDiscountPercent %</td>
+                                    <td>@item.ProductSellDiscountPercent %</td>
+                                    <td>@item.PriceAfterDiscount.ToString("#,0")</td>
+                                    <td>
+                                        @if (item.Active)
+                                        {
+                                            <a class="btn btn-danger btn-sm text-light" style="cursor:pointer"
+                                               onclick="AjaxSweetNotDelete('غیر فعال کردن',
+                                                           'بعد از غیر فعال کردن , محصول دیگر به نمایش در نمیآید و فروش آن بسته میشود ',
+                                                           'warning','غیر فعال شود','فعال بماند',
+                                                           '/UserPanel/Product/Active/@item.Id')">
+                                                غیر فعال ؟
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-success btn-sm text-light" style="cursor:pointer"
+                                               onclick="AjaxSweetNotDelete(' فعال کردن',
+                                                           'بعد از  فعال کردن , محصول  به نمایش در میآید و فروش آن آزاد میشود ',
+                                                           'warning',' فعال شود','غیر فعال بماند',
+                                                           '/UserPanel/Product/Active/@item.Id')">
+                                                فعال ؟
+                                            </a>
+                                        }
+                                        <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">
+                                            ویرایش
+                                        </a>
+                                        <a class="btn btn-warning btn-sm" onclick="OpenAjaxModal('/UserPanel/Discount/Create/@item.Id','افزودن تخفیف برای @item.Unit - @item.ProductTitle')">
+                                            ویرایش تخفیف
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="11" class="text-center text-danger">
+                                    محصولی برای نمایش موجود نیست
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

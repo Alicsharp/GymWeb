@@ -1,0 +1,127 @@
+﻿@using Gtm.Contract.SiteContract.ImageSiteContract.Query
+@using Utility.Appliation.FileService
+ 
+@inject IHttpContextAccessor _accessor;
+@model ImageAdminPaging
+@{
+    ViewData["Title"] = "لیست عکس ها";
+}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <div class="col-12">
+                    <form>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>جست و جو بر اساس عنوان</label>
+                                <input type="text" class="form-control" name="filter" value="@Model.Filter">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>تعداد نمایش در هر صفحه</label>
+                                <input type="number" id="chooseImage" class="form-control" name="take" value="@Model.Take">
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label></label>
+                            <button type="submit" class="btn btn-info">
+                                جست و جو
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <hr />
+                <a class="btn btn-success" asp-action="CreateImage">
+                    <i class=" fa fa-plus mx-2"></i> عکس جدید
+                </a>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th> تصویر</th>
+                            <th> عنوان</th>
+                            <th>تاریخ ثبت</th>
+                            <th>لینک عکس</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Images.Count() > 0)
+                        {
+                            foreach (var item in Model.Images)
+                            {
+                                <tr id="Deleted_@item.Id">
+                                    <td>
+                                        <img width="100px" src="@FileDirectories.ImageDirectory100@item.ImageName" />
+                                    </td>
+                                    <td>
+                                        @item.Title
+                                    </td>
+                                    <td>
+                                        @item.CreateDate
+                                    </td>
+                                    <td>
+                                        <input class="form-control" readonly
+                                               value="@_accessor.HttpContext.Request.Scheme.ToString()://@_accessor.HttpContext.Request.Host.ToString()@FileDirectories.ImageDirectory@item.ImageName" id="img_@item.Id" />
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-danger" title="حذف این عکس" onclick="AjaxSweet(
+                                 'حذف عکس ؟؟',
+                                 'بعد از حذف این عکس کاملا از سایت ما حذف میشود !!!1',
+                                 'warning',
+                                 'کلا حذف شود ',
+                                  'حذف نشود میخوامش',
+                                   '/Admin/Site/DeleteImage/@item.Id',
+                                   'Deleted_@item.Id')">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                        <a class="btn btn-info" title="کپی کردن لینک عکس" onclick="copy('img_@item.Id')">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+
+                </table>
+                <div class="col-12 text-center">
+                    @if (Model.PageCount > 1)
+                    {
+                        <ul class="pagination pagination-sm no-margin pull-right">
+                            @if (Model.PageId > 1)
+                            {
+                                <li><a href="/Admin/Site/Images?pageid=@(Model.PageId - 1)&take=@Model.Take&filter=@Model.Filter">«</a></li>
+                            }
+                            @for (int i = Model.StartPage; i <= Model.EndPage; i++)
+                            {
+                                if (i == Model.PageId)
+                                {
+                                    <li class="bg-info"><a>@i</a></li>
+                                }
+                                else
+                                {
+                                    <li><a href="/Admin/Site/Images?pageid=@i&take=@Model.Take&filter=@Model.Filter">@i</a></li>
+                                }
+                            }
+                            @if (Model.PageId < Model.PageCount)
+                            {
+                                <li><a href="/Admin/Site/Images?pageid=@(Model.PageId + 1)&take=@Model.Take&filter=@Model.Filter">»</a></li>
+                            }
+                            @if (Model.PageCount > Model.EndPage)
+                            {
+                                <li><a href="/Admin/Site/Images?pageid=@Model.PageCount&take=@Model.Take&filter=@Model.Filter">@Model.PageCount</a></li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+}
