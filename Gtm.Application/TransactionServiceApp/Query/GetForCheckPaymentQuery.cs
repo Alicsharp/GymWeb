@@ -22,7 +22,7 @@ namespace Gtm.Application.TransactionServiceApp.Query
         public async Task<ErrorOr<TransactionQueryModel>> Handle(GetForCheckPaymentQuery request, CancellationToken cancellationToken)
         {
             var tranaction = await _transactionRepository.GetByAuthorityAsync(request.authority);
-            if (tranaction == null) return Error.Failure();
+            if (tranaction == null) return Error.NotFound() ;
             return new TransactionQueryModel(tranaction.Id, tranaction.UserId, tranaction.Price, tranaction.RefId,
                 tranaction.Portal, tranaction.Status, tranaction.TransactionFor, tranaction.OwnerId);
         }

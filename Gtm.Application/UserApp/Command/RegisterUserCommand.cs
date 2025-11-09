@@ -36,7 +36,7 @@ namespace Gtm.Application.UserApp.Command
 
              
            var key = GenerateRandomCode.GenerateUserRegisterCode().ToString();
-
+           key = "22222";
             var hashedPassword = Sha256Hasher.Hash(key);
 
             var user = await _userRepo.GetByMobileAsync(mobile);

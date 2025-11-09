@@ -63,5 +63,14 @@ namespace Gtm.InfraStructure.RepoImple.ArticleRepo
         {
             return await _dbContext.Articles.FirstOrDefaultAsync(c => c.Slug == slug);
         }
+        /// <summary>
+         /// پیاده‌سازی متد اختصاصی محاسبه مجموع بازدیدها
+         /// </summary>
+        public async Task<int> GetTotalVisitCountAsync(CancellationToken cancellationToken = default)
+        {
+            // 2. از متد Query() (که در IRepository شما بود) استفاده می‌کنیم
+            // 3. و SumAsync را روی آن اجرا می‌کنیم
+            return await Query().SumAsync(b => b.VisitCount, cancellationToken);
+        }
     }
 }

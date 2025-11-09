@@ -23,19 +23,21 @@ namespace Gtm.WebApp.Areas.Admin.Controllers.Seo
         }
 
         [Route("/Admin/Seo/{id}/{where}")]
-        public async Task<IActionResult> Index(int Ownerid, WhereSeo where)
+        public async Task<IActionResult> Index(int id, WhereSeo where)
         {
-            var title = await _mediator.Send(new GetAdminSeoTitleQuery(where, Ownerid));
+            var title = await _mediator.Send(new GetAdminSeoTitleQuery(where, id));
             ViewData["Title"] = title.Value;
 
-            var model = await _mediator.Send(new GetSeoForEditCommand(Ownerid, where));
+            var model = await _mediator.Send(new GetSeoForEditCommand(id, where));
             return View(model.Value);
         }
         [HttpPost]
         [Route("/Admin/Seo/{id}/{where}")]
         public async Task<IActionResult> Index(int id, WhereSeo where, CreateSeo model)
         {
-            ViewData["Title"] = await _mediator.Send(new GetAdminSeoTitleQuery(where, id));
+            var s = await _mediator.Send(new GetAdminSeoTitleQuery(where, id));
+            ViewData["Title"] =s.Value;
+
 
             if (!ModelState.IsValid) return View(model);
             var res = await _mediator.Send(new UbsertSeoCommand(model));

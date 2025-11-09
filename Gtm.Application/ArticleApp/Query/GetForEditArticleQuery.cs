@@ -45,6 +45,7 @@ namespace Gtm.Application.ArticleApp.Query
                 ShortDescription = entity.ShortDescription,
                 Slug = entity.Slug,
                 Title = entity.Title,
+                Writer= entity.Writer,
             };
         }
     }

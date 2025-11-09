@@ -1,4 +1,5 @@
-﻿using Gtm.Domain.ShopDomain.ProductGalleryDomain;
+﻿using Gtm.Contract.ProductGalleryContract.Query;
+using Gtm.Domain.ShopDomain.ProductGalleryDomain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,6 @@ namespace Gtm.Application.ShopApp.ProductGalleryApp
 {
     public interface IProductGalleryRepository:IRepository<ProductGallery,int>
     {
+        Task<List<GalleryForProductSingleQueryModel>> GetProductSingleGalleryAsync(int productId);
     }
 }

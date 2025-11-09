@@ -16,5 +16,9 @@ namespace Gtm.Application.ShopApp.SellerApp
         Task<SellerRequestDetailAdminQueryModel> GetSellerRequestDetailForAdmin(int id);
         Task<Seller?> GetSellerForUserPanelAsync(int id, int userId);
         Task<Seller?> GetSellerByIdAsync(int id);
+        /// <summary>
+        /// بررسی می‌کند که آیا یک فروشنده متعلق به یک کاربر خاص است یا خیر
+        /// </summary>
+        Task<bool> IsSellerForUserAsync(int sellerId, int userId, CancellationToken cancellationToken = default);
     }
 }

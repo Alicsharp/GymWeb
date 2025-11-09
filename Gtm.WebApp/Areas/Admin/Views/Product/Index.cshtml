@@ -93,24 +93,21 @@
                                     <td>
                                         @{
                                             string title = item.Active ? "غیر فعال شود ؟؟؟" : "فعال شود ؟؟؟";
-                                            string text = item.Active ? "بعد از غیر فعال شدن این محصول - محصول نمایش داده نمیشود ." : "بعد از فعال شدن - محصول نمایش داده می شود ";
+                                            string text = item.Active ? "بعد از غیر فعال شدن این دسته بندی و مقاله های آن نمایش داده نمیشود ." : "بعد از فعال شدن این دسته بندی و مقاله های فعال آن نمایش داده میشود";
                                             string cancel = item.Active ? "فعال بماند" : "غیر فعال بماند";
                                             string confirm = item.Active ? "غیر فعال شود" : "فعال شود";
                                         }
-                                        <div class="checkbox-wrapper-49">
+                                        <div class="checkbox-wrapper-49"
+                                             onclick="AjaxSweetNotDelete(
+                                         '@title',
+                                         '@text',
+                                         'question',
+                                         '@confirm',
+                                          '@cancel',
+                                           '/Admin/ArticleCategory/Active/@item.Id')">
                                             <div class="block">
-                                                <input data-index="pie_@item.Id"
-                                                       id="pie-@item.Id"
-                                                       type="checkbox"
-                                                       @(item.Active ? "checked" : "")
-                                                       onclick="event.preventDefault(); AjaxSweetNotDelete(
-                             '@title',
-                             '@text',
-                             'question',
-                             '@confirm',
-                             '@cancel',
-                             '/Admin/Product/Active/@item.Id',
-                             this)" />
+                                                <input data-index="pie_@item.Id" id="pie-@item.Id"
+                                                       @(item.Active ? "checked" : "") type="checkbox" />
                                                 <label for="pie-@item.Id"></label>
                                             </div>
                                         </div>

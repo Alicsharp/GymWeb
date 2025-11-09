@@ -1,17 +1,17 @@
-﻿﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      @await Component.InvokeAsync("Fav") 
+    @await Component.InvokeAsync("Fav")
+    @RenderSection("SEO", false)
     <title>@ViewData["Title"]</title>
     <partial name="_Css" />
 </head>
 @{
-      var SuccessLogin = TempData["SuccessLogin"] != null;
+        var SuccessLogin = TempData["SuccessLogin"] != null;
 }
 <body class="index-page sidebar-collapse">
 
@@ -23,16 +23,31 @@
         <partial name="_Header" />
         @RenderBody()
         <partial name="_Footer" />
+        <div class="modal-share modal-width-custom modal fade" id="factorModal" tabindex="-1"
+             role="dialog" aria-labelledby="factorModal" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" onclick="closeFactorAjaxModal()">
+                            &times;
+                        </button>
+                        <h4 class="modal-title" id="ajax-modal-title"></h4>
+                    </div>
+                    <div class="modal-body" id="myFactorModalBody">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <partial name="_Js" />
     @if (SuccessLogin)
-    { 
+    {
         <script>
             AlertSweet("عملیات موفق", "شما با موفقیت وارد سایت شدید .", "success");
         </script>
     }
     @RenderSection("Scripts", false)
-    @RenderSection("Styles", false)
 </body>
 
 </html>
+

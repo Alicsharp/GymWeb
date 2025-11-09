@@ -2,6 +2,8 @@
 using Gtm.Domain.ShopDomain.ProductFeaureDomain;
 using Gtm.Domain.ShopDomain.ProductGalleryDomain;
 using Gtm.Domain.ShopDomain.ProductSellDomain;
+using Gtm.Domain.ShopDomain.ProductVisitAgg;
+using Gtm.Domain.ShopDomain.WishListAgg;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +27,8 @@ namespace Gtm.Domain.ShopDomain.ProductDomain
         public List<ProductFeature> ProductFeatures { get; private set; }
         public List<ProductGallery> ProductGalleries { get; private set; }
         public List<ProductSell> ProductSells { get; private set; }
+        public List<ProductVisit> ProductVisits { get; private set; }
+        public List<WishList> WishLists { get; private set; }
         public void EditCategoryRelations(List<ProductCategoryRelation> categoryRelations)
         {
             ProductCategoryRelations = categoryRelations;
@@ -35,6 +39,8 @@ namespace Gtm.Domain.ShopDomain.ProductDomain
             ProductFeatures = new();
             ProductGalleries = new();
             ProductSells = new();
+            ProductVisits = new();
+            WishLists = new();
         }
 
         public void Edit(string title, string slug, string shortDescription,

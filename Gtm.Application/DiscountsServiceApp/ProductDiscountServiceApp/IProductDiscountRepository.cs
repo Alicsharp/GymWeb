@@ -12,5 +12,9 @@ namespace Gtm.Application.DiscountsServiceApp.ProductDiscountServiceApp
     {
         Task<ProductDiscount?> GetActiveDiscountForProductAsync(int productId, CancellationToken cancellationToken = default);
         Task<List<ProductDiscount>> GetActiveDiscountsForProductAsync(int productId, int productSellId = 0, CancellationToken cancellationToken = default);
+        /// <summary>
+        /// تمام تخفیف‌های فعال را برای لیست مشخصی از محصولات واکشی می‌کند.
+        /// </summary>
+        Task<List<ProductDiscount>> GetActiveDiscountsForProductsAsync(List<int> productIds);
     }
 }

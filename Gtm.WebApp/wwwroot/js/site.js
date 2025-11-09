@@ -1,4 +1,7 @@
-﻿function isNumber(event) {
+﻿$(function () {
+    CheckWishLists();
+});
+function isNumber(event) {
     var ASCIICode = (event.which) ? event.which : event.keyCode
     if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
         return false;
@@ -277,4 +280,127 @@ function ChangePagination(page) {
 function chnageOrderBy(orderBy) {
     $("input#inputOrderBy").val(orderBy);
     $("form#myForm").submit();
+}
+function UbsertToWishList(id) {
+    $.ajax({
+        type: "Get",
+        url: "/Home/CheckProductWishList/" + id
+    }).done(function (res) {
+        if (res) {
+            Swal.fire({
+                title: "حذف از علاقه مندی ها ؟ ",
+                text: "این محصول در لیست علاقه مندی های شما موجود میباشد . آیا میخواهید از لیست علاقه مندی های شما حذف شود ؟ ",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: "حذف شود",
+                cancelButtonText: "انصراف"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "Get",
+                        url: "/Home/UbsertProductWishList/" + id
+                    }).done(function (res) {
+                        Loding();
+                        if (res) {
+                            AlertSweetTimer("عملیات موفق", "success", 3000);
+                            setTimeout(function () {
+                                location.reload();
+                            }, 3000);
+                        }
+                        else {
+                            AlertSweetTimer("عملیات نا موفق", "error", 3000);
+                            setTimeout(function () {
+                                location.reload();
+                            }, 3000);
+                        }
+                    });
+                }
+            })
+        }
+        else {
+            Swal.fire({
+                title: "افزودن از علاقه مندی ها ؟ ",
+                text: "این محصول در لیست علاقه مندی های شما موجود نیست . آیا میخواهید به لیست علاقه مندی های شما اضافه شود ؟ ",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: "اضافه شود",
+                cancelButtonText: "انصراف"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "Get",
+                        url: "/Home/UbsertProductWishList/" + id
+                    }).done(function (res) {
+                        Loding();
+                        if (res) {
+                            AlertSweetTimer("عملیات موفق", "success", 3000);
+                            setTimeout(function () {
+                                location.reload();
+                            }, 3000);
+                        }
+                        else {
+                            AlertSweetTimer("عملیات نا موفق", "error", 3000);
+                            setTimeout(function () {
+                                location.reload();
+                            }, 3000);
+                        }
+                    });
+                }
+            })
+        }
+    });
+}
+function CheckWishLists() {
+    $.ajax({
+        type: "Get",
+        url: "/Home/GetWishListCount"
+    }).done(function (res) {
+        $("span#count-wish").text(res);
+    });
+}
+function SearchAjax() {
+    var filterInput = $("input#gsearchsimple").val();
+    var img = ` <li class="list-group-item contsearch">
+                    <img class="image-loader-search" src="/Images/icegif-1262.gif" />
+                </li>`;
+    var parent = $("ul#ul-parent-serach");
+    parent.html("");
+    parent.append(img);
+    if (filterInput !== null && filterInput !== "") {
+        $.ajax({
+            type: "Post",
+            url: "/Home/AjaxSearch",
+            data: { filter: filterInput }
+        }).done(function (res) {
+            var model = JSON.parse(res);
+            if (model.length > 0) {
+                parent.html("");
+                model.forEach(x => {
+                    debugger;
+                    var data = `
+                     <li class="list-group-item contsearch">
+                                <a href="${x.Url}" class="gsearch">
+                                    <i>
+                                    <img src="${x.ImageAddress}" height="30" />
+                                    </i>
+                                   ${x.Title}
+                                </a>
+                            </li>
+                               `;
+                    parent.append(data);
+                });
+            }
+            else {
+                parent.html(`
+                     <li class="list-group-item contsearch">
+                                <p>موردی یافت نشد .</p>
+                            </li>
+                               `);
+            }
+        });
+    }
 }

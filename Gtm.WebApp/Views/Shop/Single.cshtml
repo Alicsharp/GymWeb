@@ -1,13 +1,18 @@
-﻿@using Gtm.Contract.ProductContract.Query
+﻿@inject IAuthService  _authService
+@using Gtm.Contract.ProductContract.Query
+@using Utility.Appliation.Auth
 @using Utility.Appliation.FileService
 @using Utility.Domain.Enums
 @model SingleProductUIQueryModel
-
-
 @{
-    ViewData["Title"] = Model.Seo.MetaTitle;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Title;
     var SuccessCreateComment = TempData["SuccessCreateComment"] != null;
     var FaildCreateComment = TempData["FaildCreateComment"] != null;
+    
+}
+@section Seo {
+    @await Component.InvokeAsync("Seo", new { ownerId = Model.Id, where = WhereSeo.Product, title = Model.Title })
 }
 <style>
 
@@ -424,9 +429,20 @@
                                                                     <td>
                                                                         @if (item.Amount > 0)
                                                                         {
-                                                                            <button class="btn btn-success" onclick="AddToCart('@item.SellerId')">
-                                                                                افزودن به سبد
-                                                                            </button>
+                                                                            if (_authService.IsUserLogin())
+                                                                            {
+                                                                                <button class="btn btn-success" onclick="AddToFactor('@Model.Id','@item.Id','@Model.Title','@item.SellerName')">
+                                                                                    افزودن به فاکتور
+                                                                                </button>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <button class="btn btn-success" onclick="AddToBasket('@Model.Id','@item.Id','@Model.Title','@item.SellerName','@item.Price',
+                                                                                           '@item.PriceAfterOff','@Model.Slug','@FileDirectories.ProductImageDirectory500@Model.ImageName','@item.Amount'
+                                                                                           ,'@item.Unit')">
+                                                                                    افزودن به سبد
+                                                                                </button>
+                                                                            }
                                                                         }
                                                                         else
                                                                         {
@@ -458,12 +474,14 @@
         </div>
     </div>
 </main>
+<script asp-append-version="true" src="~/js/cart.js"></script>
 @section Scripts {
     <script>
         $(function () {
             GetComments("@Model.Id", "@CommentFor.محصول.ToString()", 1);
         });
     </script>
+
     @if (SuccessCreateComment)
     {
         <script>

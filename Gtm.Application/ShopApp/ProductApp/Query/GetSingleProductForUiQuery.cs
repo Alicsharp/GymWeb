@@ -5,6 +5,7 @@ using Gtm.Application.ShopApp.SellerApp;
 using Gtm.Contract.ProductContract.Query;
 using Gtm.Contract.ProductFeautreContract.Query;
 using Gtm.Contract.ProductGalleryContract.Query;
+using Gtm.Contract.SeoContract.Query;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,12 @@ namespace Gtm.Application.ShopApp.ProductApp.Query
         private readonly IProductRepository _productRepository;
         private readonly IMediator _mediator;
 
-        public GetSingleProductForUiQueryHandler(ISeoRepository seoRepository, ICityRepo cityRepository, ISellerRepository sellerRepository, IProductRepository productRepository, IMediator mediator)
+        public GetSingleProductForUiQueryHandler(
+            ISeoRepository seoRepository,
+            ICityRepo cityRepository,
+            ISellerRepository sellerRepository,
+            IProductRepository productRepository,
+            IMediator mediator)
         {
             _seoRepository = seoRepository;
             _cityRepository = cityRepository;
@@ -34,7 +40,7 @@ namespace Gtm.Application.ShopApp.ProductApp.Query
             _mediator = mediator;
         }
 
-        public async Task<ErrorOr<SingleProductUIQueryModel>> Handle(GetSingleProductForUiQuery request,CancellationToken cancellationToken)
+        public async Task<ErrorOr<SingleProductUIQueryModel>> Handle(GetSingleProductForUiQuery request, CancellationToken cancellationToken)
         {
             // دریافت محصول با روابطش
             var product = await _productRepository.GetProductWithCategoryFeaturesGalleryAndActiveSellsAsync(request.id);
@@ -71,56 +77,54 @@ namespace Gtm.Application.ShopApp.ProductApp.Query
                         ImageAlt = g.ImageAlt
                     }).ToList() ?? new(),
                 ProductSells = new(),
-                Seo = null
+                // Seo = null // بعداً اضافه می‌کنی
             };
 
             // دریافت breadcrumb
-            var breadCrumbResult = await _mediator.Send(new GetProductBreadCrumbQuery(null, product.Slug), cancellationToken);
+            var breadCrumbResult = await _mediator.Send(new GetProductBreadCrumbQuery(null, product.Slug));
             model.BreadCrumb = breadCrumbResult.Value;
 
             // دریافت اطلاعات SEO
             var seo = await _seoRepository.GetSeoForUiAsync(product.Id, WhereSeo.Product, product.Title);
-            model.Seo = new(
-                seo?.MetaTitle,
-                seo?.MetaDescription,
-                seo?.MetaKeyWords,
-                seo?.IndexPage ?? true,
-                seo?.Canonical,
-                seo?.Schema
-            );
+            // اگر لازم داری این قسمت رو فعال کن
+           
 
-            // پردازش فروشندگان به صورت موازی
-            var sellerTasks = product.ProductSells?
-                .Select(async sell =>
+            // پردازش فروشندگان به صورت سریالی (اجتناب از concurrency error)
+            var productSellsList = new List<ProductSellForProductSingleQueryModel>();
+            if (product.ProductSells != null)
+            {
+                foreach (var sell in product.ProductSells.Where(s => s.IsActive))
                 {
-                    var seller = await _sellerRepository.GetByIdAsync(sell.SellerId);
-                    if (seller == null) return null;
+                    // ✅ اگر Seller از قبل Include شده باشد، مستقیم از آن استفاده می‌شود
+                    var seller = sell.Seller ?? await _sellerRepository.GetByIdAsync(sell.SellerId);
+                    if (seller == null) continue;
 
                     var city = await _cityRepository.GetCityWithStateAsync(c =>
-                        c.Id == seller.CityId &&
-                        c.StateId == seller.StateId);
+                        c.Id == seller.CityId && c.StateId == seller.StateId);
 
-                    return new ProductSellForProductSingleQueryModel
+                    productSellsList.Add(new ProductSellForProductSingleQueryModel
                     {
-                        SellerId = sell.SellerId,
+                        Id = sell.Id,
+                        ProductId = product.Id,
+                        SellerId = sell.SellerId, // ✅ حالا مقدار درست خواهد بود
                         SellerName = seller.Title,
-                        ProductId =product.Id, //چیست
-                        SellerAddress = city != null ?
-                            $"{city.State?.Title} {city.Title} {seller.Address}" :
-                            seller.Address,
+                        SellerAddress = city != null
+                            ? $"{city.State?.Title} {city.Title} {seller.Address}"
+                            : seller.Address,
                         Price = sell.Price,
-                        PriceAfterOff = sell.Price - 1,
+                        PriceAfterOff = sell.Price, // اگر خواستی تخفیف رو اضافه کن
                         Amount = sell.Amount,
                         Unit = sell.Unit,
                         Weight = sell.Weight
-                    };
-                }).ToList() ?? new();
+                    });
+                }
+            }
 
-            var productSells = await Task.WhenAll(sellerTasks);
-            model.ProductSells = productSells.Where(ps => ps != null).ToList();
+            model.ProductSells = productSellsList;
 
             return model;
         }
-
     }
+
+
 }

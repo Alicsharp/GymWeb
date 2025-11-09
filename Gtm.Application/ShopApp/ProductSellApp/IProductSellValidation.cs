@@ -46,7 +46,7 @@ namespace Gtm.Application.ShopApp.ProductSellApp
 
             // بررسی وجود فروش محصول
             var productSellExists = await _productSellRepository.ExistsAsync(x=>x.Id==id);
-            if (productSellExists)
+            if (productSellExists==false)
             {
                 errors.Add(Error.NotFound(
                     code: "ActivationChange.NotFound",
@@ -84,9 +84,9 @@ namespace Gtm.Application.ShopApp.ProductSellApp
             {
                 if (sel.SellId > 0)
                 {
-                    var exist = await _productSellRepository.ExistsAsync(c=> c.Id == sel.SellId);
-                    if (!exist) { }
-                    errors.Add(Error.NotFound(code: "SellerIdNotCorrect", "ایدی فروشنده معتبر نیست"));
+                    //var exist = await _productSellRepository.ExistsAsync(c=> c.Id == sel.SellId);
+                    //if (!exist) { }
+                    //errors.Add(Error.NotFound(code: "SellerIdNotCorrect", "ایدی فروشنده معتبر نیست"));
                 }
                 if (sel.count < 0)
                     errors.Add(Error.Validation("ProductCount", "تعدا محصول نمی تواند صفر باشد"));

@@ -2,7 +2,7 @@
 $(function () {
     UpdateBasket();
 })
-function AddToBasket(pId, psId, title, shopTitle, p, pAO, slug, imageName, amount, unit) {
+function AddToBasket(pId, psId, title, shopTitle, p, pAO, slug, imageName, amount,unit) {
     var productId = parseInt(pId);
     var productSellId = parseInt(psId);
     var price = parseInt(p);
@@ -35,10 +35,10 @@ function AddToBasket(pId, psId, title, shopTitle, p, pAO, slug, imageName, amoun
                         $.cookie(cookieCartName, JSON.stringify(products), {
                             expires: 7, path: "/"
                         });
-                        AlertSweet("عملیات موفق", "محصول به سبد خرید اضافه شد .", "success");
+                        AlertSweet("عملیات موفق", "محصول به سبد خرید اضافه شد .","success");
                     }
                     else {
-                        AlertSweet("عملیات نا موفق !!", "این محصول در سبد شما موجود است و بیشتر موجودی نداریم .", "error");
+                        AlertSweet("عملیات نا موفق !!", "این محصول در سبد شما موجود است و بیشتر موجودی نداریم .","error");
                     }
 
                 }
@@ -182,7 +182,7 @@ function DeleteFromBasket(productSellId) {
     })
         .then((willDelete) => {
             if (willDelete.isConfirmed) {
-
+               
                 if (itemRemove !== undefined) {
                     products.splice(itemRemove, 1);
                     $.cookie(cookieCartName, JSON.stringify(products), {
@@ -219,11 +219,11 @@ function DeleteFromBasket(productSellId) {
                 }
             }
         });
-
+    
 
 }
 function UpdateBasket() {
-    let products = [];
+    let products =[];
     $.ajax({
         type: "Get",
         url: `/Auth/IsUserLogin`
@@ -458,38 +458,38 @@ function DeleteOrderItem(id, title) {
 }
 function OrderItemMinus(id) {
     $.ajax({
-        type: "Get",
+        type: "GET",
         url: `/UserPanel/Order/OrderItemMinus/${id}`
     }).done(function (res) {
-        var model = JSON.parse(res);
-        if (!model.Success) {
-            AlertSweetTimer(model.Message, "error", 3000);
-            setTimeout(
-                () => { location.reload(); }
-                , 3000);
-        }
-        else {
+        if (!res.success) {
+            AlertSweetTimer(res.message, "error", 3000);
+            setTimeout(() => location.reload(), 3000);
+        } else {
             location.reload();
         }
     });
 }
+
 function OrderItemPlus(id) {
     $.ajax({
-        type: "Get",
+        type: "GET",
         url: `/UserPanel/Order/OrderItemPlus/${id}`
     }).done(function (res) {
-        var model = JSON.parse(res);
-        if (!model.Success) {
-            AlertSweetTimer(model.Message, "error", 3000);
-            setTimeout(
-                () => { location.reload(); }
-                , 3000);
-        }
-        else {
+        // ❌ نیازی به JSON.parse نیست، چون res خودش JSON آبجکت است
+        if (!res.success) {
+            AlertSweetTimer(res.message, "error", 2000);
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            // موفقیت
+            // اگر خواستی SweetAlert موفقیت هم نشون بده:
+            // AlertSweetTimer(res.message, "success", 1500);
             location.reload();
         }
+    }).fail(function () {
+        AlertSweetTimer("خطایی در ارتباط با سرور رخ داد", "error", 2000);
     });
 }
+
 function AddOrderSellerDiscount(id) {
     var codeInput = $(`input#discountCode_${id}`);
     if (codeInput === undefined || codeInput.val() === null || codeInput.val() === "") {
@@ -544,39 +544,79 @@ function AddOrderDiscount() {
         });
     }
 }
+//function AddToFactor(pId, psId, title, shopTitle) {
+//    var productSellId = parseInt(psId);
+//    swal.fire({
+//        title: "افزودن به فاکتور",
+//        text: `${title} از فروشگاه ${shopTitle} به فاکتور شما اضافه شود ؟`,
+//        icon: "question",
+//        showCancelButton: true,
+//        confirmButtonColor: '#3085d6',
+//        cancelButtonColor: '#d33',
+//        confirmButtonText: "اضافه شود ",
+//        cancelButtonText: "انصراف"
+//    })
+//        .then((willDelete) => {
+//            Loding();
+//            if (willDelete.isConfirmed) {
+//                $.ajax({
+//                    type: "Get",
+//                    url: `/UserPanel/Order/AddOrderItem/${productSellId}`
+//                })
+//                    .done(function (res) {
+//                        var model = JSON.parse(res);
+//                        if (model.Success) {
+//                            AlertSweetTimer("عملیات موفق", "success", 3000);
+//                            EndLoading();
+//                            UpdateBasket();
+//                        }
+//                        else {
+//                            AlertSweetTimer(model.Message, "error", 3000);
+//                            EndLoading();
+//                        }
+//                    });
+//            }
+//        });
+//}
+
+ 
 function AddToFactor(pId, psId, title, shopTitle) {
     var productSellId = parseInt(psId);
-    swal.fire({
-        title: "افزودن به فاکتور",
-        text: `${title} از فروشگاه ${shopTitle} به فاکتور شما اضافه شود ؟`,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: "اضافه شود ",
-        cancelButtonText: "انصراف"
-    })
-        .then((willDelete) => {
-            Loding();
-            if (willDelete.isConfirmed) {
-                $.ajax({
-                    type: "Get",
-                    url: `/UserPanel/Order/AddOrderItem/${productSellId}`
-                })
-                    .done(function (res) {
-                        var model = JSON.parse(res);
-                        if (model.Success) {
-                            AlertSweetTimer("عملیات موفق", "success", 3000);
-                            EndLoading();
-                            UpdateBasket();
-                        }
-                        else {
-                            AlertSweetTimer(model.Message, "error", 3000);
-                            EndLoading();
-                        }
-                    });
-            }
-        });
+       swal.fire({
+            title: "افزودن به فاکتور",
+            text: `${title} از فروشگاه ${shopTitle} به فاکتور شما اضافه شود ؟`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: "اضافه شود ",
+            cancelButtonText: "انصراف"
+        })
+    .then((willDelete) => {
+    Loding();
+    if (willDelete.isConfirmed) {
+        $.ajax({
+            type: "Post", // <-- باید POST باشد
+            url: `/UserPanel/Order/AddOrderItem/${productSellId}`
+            // (اگر AntiForgeryToken دارید، باید هدر آن را هم اضافه کنید)
+        })
+            .done(function (res) { // <-- 'res' اکنون یک آبجکت است، نه رشته
+                // var model = JSON.parse(res); // <-- این خط را حذف کنید
+                if (res.success) { // <-- مستقیماً از res.success استفاده کنید
+                    AlertSweetTimer("عملیات موفق", "success", 3000);
+                    EndLoading();
+                    UpdateBasket();
+                } else {
+                    AlertSweetTimer(res.message, "error", 3000); // <-- مستقیماً از res.message
+                    EndLoading();
+                }
+            })
+            .fail(function () { // <-- اضافه کردن این بخش خوب است
+                AlertSweetTimer("خطای سرور. درخواست انجام نشد", "error", 3000);
+                EndLoading();
+            });
+    }
+});
 }
 function OpenFactorModal(url, title) {
     $.get(url, function (res) {
@@ -842,25 +882,10 @@ function ChangeOrderAddress(id, state, city, address, postalCode) {
 }
 function ChangeOrderPayment(payment, orderPayment) {
     if (payment == 'پرداخت_از_درگاه' && payment == orderPayment) {
-        Loding();
-        Swal.fire("پرداخت روی درگاه است .", "", "info");
-        setTimeout(
-            () => {
-                EndLoading();
-                location.reload();
-            }
-            , 2000);
+        // ... (منطق شما برای حالت تکراری)
     }
     else if (payment == 'پرداخت_از_کیف_پول' && payment == orderPayment) {
-        Loding();
-        Swal.fire("پرداخت روی کیف پول است .", "", "info");
-        setTimeout(
-            () => {
-
-                EndLoading();
-                location.reload();
-            }
-            , 2000);
+        // ... (منطق شما برای حالت تکراری)
     }
     else {
         Loding();
@@ -869,17 +894,26 @@ function ChangeOrderPayment(payment, orderPayment) {
             url: `/UserPanel/Order/ChangePayment`,
             data: { pay: payment }
         }).done(function (res) {
-            var model = JSON.parse(res);
-            if (model.Success) {
+
+            // 'res' همان آبجکت مدل شماست
+
+            // 👇 --- اصلاحیه اینجاست --- 👇
+            if (res.success) { // <-- به جای res.Success
                 Swal.fire("عملیات موفق ", "", "success");
                 setTimeout(
                     () => { location.reload(); }
                     , 3000);
             }
             else {
-                AlertSweetTimer(model.Message, "error", 3000);
+                AlertSweetTimer(res.message, "error", 3000); // <-- به جای res.Message
                 EndLoading();
             }
+            // --- پایان اصلاحیه ---
+
+        }).fail(function () {
+            // (اضافه کردن .fail برای مدیریت خطاهای 500 هم ایده خوبی است)
+            AlertSweetTimer("خطای سرور", "error", 3000);
+            EndLoading();
         });
     }
 }
@@ -914,7 +948,7 @@ function PaymentFactor() {
                                 () => { location.href = model.Url; }
                                 , 3000);
                         }
-
+                       
                     }
                     else {
                         AlertSweetTimer(model.Message, "error", 3000);

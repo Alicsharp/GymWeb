@@ -1,4 +1,6 @@
-﻿using Gtm.Application.ShopApp.ProductApp.Query;
+﻿using Gtm.Application.ArticleApp.Command;
+using Gtm.Application.ShopApp.ProductApp.Command;
+using Gtm.Application.ShopApp.ProductApp.Query;
 using Gtm.Application.ShopApp.ProductCategoryApp.Query;
 using Gtm.Application.ShopApp.ProductSellApp.Command;
 using Gtm.Application.ShopApp.ProductSellApp.Query;
@@ -87,6 +89,15 @@ namespace Gtm.WebApp.Areas.UserPanel.Controllers.Seller
             }
             //ModelState.AddModelError(res.ModelName, res.Message);
             return View(model);
+        }
+        public async Task<bool> Active(int id)
+        {
+            var result = await _mediator.Send(new ProductSellActivationChangeCommand(id));
+            if (result.IsError == false)
+            {
+                return true;
+            }
+            return false;
         }
         [HttpPost]
         public async Task<JsonResult> Categories(int id = 0)

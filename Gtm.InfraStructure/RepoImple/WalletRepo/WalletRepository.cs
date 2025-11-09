@@ -48,6 +48,27 @@ namespace Gtm.InfraStructure.RepoImple.WalletRepo
             int withdraws = QueryBy(w => w.UserId == userId && w.IsPay && w.Type == WalletType.برداشت).Sum(w => w.Price);
             return deposits - withdraws;
         }
-        
+        public async Task<int> GetWalletAmountAsync(int userId )
+        {
+            // 1. استفاده از متد Query() که از IRepository (کلاس پایه) می‌آید
+            //    تا یک IQueryable بسازیم.
+            var baseQuery = Query()
+                .Where(w => w.UserId == userId && w.IsPay);
+
+            // 2. اجرای موازی هر دو SumAsync برای بهینه‌ترین حالت
+            Task<int> depositsTask = baseQuery
+                .Where(w => w.Type == WalletType.واریز)
+                .SumAsync(w => w.Price );
+
+            Task<int> withdrawsTask = baseQuery
+                .Where(w => w.Type == WalletType.برداشت)
+                .SumAsync(w => w.Price );
+
+            // 3. منتظر ماندن برای اتمام هر دو کوئری
+            await Task.WhenAll(depositsTask, withdrawsTask);
+
+            // 4. بازگرداندن نتیجه
+            return depositsTask.Result - withdrawsTask.Result;
+        }
     }
 }

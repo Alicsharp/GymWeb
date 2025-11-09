@@ -48,10 +48,10 @@ namespace Gtm.Application.CommentApp
             }
 
             // اعتبارسنجی ParentId
-            if (dto.ParentId.HasValue && !await commentRepo.ExistsAsync(c => c.Id == dto.ParentId))
-            {
-                errors.Add(Error.Validation("Comment.ParentNotFound", "کامنت والد یافت نشد."));
-            }
+            //if (dto.ParentId.HasValue && !await commentRepo.ExistsAsync(c => c.Id == dto.ParentId))
+            //{
+            //    errors.Add(Error.Validation("Comment.ParentNotFound", "کامنت والد یافت نشد."));
+            //}
 
             // اعتبارسنجی ایمیل برای کاربران مهمان (userId == 0)
             if (dto.UserId == 0)

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Gtm.Application.OrderServiceApp.Command
 {
-    public record UbsertOpenOrderForUserCommand(int _userId, List<ShopCartViewModel> cart):IRequest<ErrorOr<Success>>;
+    public record UbsertOpenOrderForUserCommand(int _userId, List<ShopCartViewModel> cart) : IRequest<ErrorOr<Success>>;
     public class UbsertOpenOrderForUserCommandHandler : IRequestHandler<UbsertOpenOrderForUserCommand, ErrorOr<Success>>
     {
         private readonly IOrderRepository _orderRepository;
@@ -29,35 +29,35 @@ namespace Gtm.Application.OrderServiceApp.Command
             var order = await _orderRepository.GetOpenOrderForUserAsync(request._userId);
             foreach (var item in request.cart)
             {
-                var productSell = await _productSellRepository.GetByIdAsync(item.productSellId);
+                var productSell = await _productSellRepository.GetByIdAsync(item.ProductSellerIds);
 
                 if (order.OrderSellers.Any(o => o.SellerId == productSell.SellerId) == false)
                 {
                     OrderSeller orderSeller = new(productSell.SellerId);
-                    OrderItem orderItem = new(item.productSellId, item.count, item.price, item.priceAfterOff, item.unit);
+                    OrderItem orderItem = new(item.ProductSellerIds, item.count, item.price, item.priceAfterOff, item.unit);
                     orderSeller.AddOrderItem(orderItem);
                     order.AddOrderSeller(orderSeller);
                 }
                 else
                 {
                     OrderSeller orderSeller = order.OrderSellers.Single(o => o.SellerId == productSell.SellerId);
-                    if (orderSeller.OrderItems.Any(i => i.ProductSellId == item.productSellId) == false)
+                    if (orderSeller.OrderItems.Any(i => i.ProductSellId == item.ProductSellerIds) == false)
                     {
-                        OrderItem orderItem = new(item.productSellId, item.count, item.price, item.priceAfterOff, item.unit);
+                        OrderItem orderItem = new(item.ProductSellerIds, item.count, item.price, item.priceAfterOff, item.unit);
                         orderSeller.AddOrderItem(orderItem);
                     }
                     else
                     {
-                        OrderItem orderItem = orderSeller.OrderItems.Single(i => i.ProductSellId == item.productSellId);
+                        OrderItem orderItem = orderSeller.OrderItems.Single(i => i.ProductSellId == item.ProductSellerIds);
                         orderItem.PlusCount(item.count);
                     }
                 }
             }
-            if(await _orderRepository.SaveChangesAsync(cancellationToken))
+            if (await _orderRepository.SaveChangesAsync(cancellationToken))
             {
                 return Result.Success;
             }
-            return Error.Failure() ;
+            return Error.Failure();
         }
     }
 }

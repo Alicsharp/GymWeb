@@ -1,5 +1,6 @@
 ﻿using Gtm.Contract.ProductSellContract.Query;
 using Gtm.Domain.ShopDomain.ProductDomain;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,12 @@ namespace Gtm.Application.ShopApp.ProductApp
         Task<List<ProductForAddProductSellQueryModel>> GetProductsByCategoryIdAsync(int categoryId);
         IQueryable<Product> GetActiveProducts();
         Task<Product?> GetBySlugWithCategoriesAsync(string slug);
-
+        Task<List<Product>> GetTop10BestSellingAsync();
+   
+        Task<List<Product>> GetTop10NewestAsync();
+     
+        Task<List<Product>> GetTop10MostVisitedAsync();
+        IQueryable<Product> SearchProductsByTitleQuery(string filter);
+      
     }
 }

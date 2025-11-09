@@ -3,7 +3,7 @@
     public class ShopCartViewModel
     {
         public int productId { get; set; }
-        public int productSellId { get; set; }
+        public int ProductSellerIds { get; set; }
         public int price { get; set; }
         public int priceAfterOff { get; set; }
         public int count { get; set; }

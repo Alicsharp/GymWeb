@@ -104,5 +104,11 @@ namespace Gtm.InfraStructure.RepoImple.SellerRepo
             return await _context.Sellers
                 .SingleOrDefaultAsync(s => s.Id == id && s.UserId == userId);
         }
+        public async Task<bool> IsSellerForUserAsync(int sellerId, int userId, CancellationToken cancellationToken = default)
+        {
+            // به جای Find و سپس بررسی، مستقیماً از AnyAsync استفاده می‌کنیم
+            return await _context.Sellers
+                .AnyAsync(s => s.Id == sellerId && s.UserId == userId, cancellationToken);
+        }
     }
 }

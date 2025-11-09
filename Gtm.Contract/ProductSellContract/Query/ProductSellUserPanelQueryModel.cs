@@ -13,7 +13,7 @@
         public string Unit { get; set; }
         public int Weight { get; set; }
         public int SellCount { get; set; }
-        public bool Active { get; set; }
+        public bool IsActive { get; set; }
         public int ProductDiscountPercent { get; set; }
         public int ProductSellDiscountPercent { get; set; }
         public int PriceAfterDiscount { get; set; }

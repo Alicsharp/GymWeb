@@ -61,12 +61,12 @@ namespace Gtm.InfraStructure.RepoImple.ProductRepo
         public async Task<Product> GetProductWithCategoryFeaturesGalleryAndActiveSellsAsync(int id)
         {
             return await _context.Products
-        .Include(p => p.ProductCategoryRelations)
-            .ThenInclude(p => p.ProductCategory)
-        .Include(p => p.ProductFeatures)
-        .Include(p => p.ProductGalleries)
-        .Include(p => p.ProductSells.Where(s => s.IsActive))
-        .SingleOrDefaultAsync(p => p.Id == id);
+                .Include(p => p.ProductCategoryRelations).ThenInclude(p => p.ProductCategory)
+                .Include(p => p.ProductFeatures)
+                .Include(p => p.ProductGalleries)
+                .Include(p => p.ProductSells)
+                    .ThenInclude(s => s.Seller)
+                .SingleOrDefaultAsync(c => c.Id == id);
         }
 
         public IQueryable<Product> GetProductWithProductSellsAndOrderItems()
@@ -88,6 +88,46 @@ namespace Gtm.InfraStructure.RepoImple.ProductRepo
         public IQueryable<Product> GetProductWithRelations()
         {
             return _context.Products.Include(p => p.ProductCategoryRelations);
+        }
+        public async Task<List<Product>> GetTop10BestSellingAsync()
+        {
+            // ما مرتب‌سازی و Take را قبل از ToListAsync می‌آوریم تا در دیتابیس اجرا شود
+            return await _context.Products
+                .Include(p => p.ProductSells).ThenInclude(s => s.OrderItems) // برای محاسبه Sum
+                .Include(p => p.ProductSells).ThenInclude(s => s.Seller) // برای مپ کردن اولیه
+                .Where(p => p.IsActive && p.ProductSells.Any())
+                .OrderByDescending(p => p.ProductSells.Sum(s => s.OrderItems.Count)) // در دیتابیس اجرا می‌شود
+                .Take(10) // در دیتابیس اجرا می‌شود
+                .ToListAsync();
+        }
+        public async Task<List<Product>> GetTop10NewestAsync()
+        {
+            // تفاوت فقط در OrderByDescending است
+            return await _context.Products
+                .Include(p => p.ProductSells).ThenInclude(s => s.Seller) // برای مپ کردن اولیه
+                .Where(p => p.IsActive && p.ProductSells.Any())
+                .OrderByDescending(p => p.Id) // <-- تغییر یافته (بر اساس جدیدترین)
+                .Take(10) // در دیتابیس اجرا می‌شود
+                .ToListAsync();
+        }
+        public async Task<List<Product>> GetTop10MostVisitedAsync()
+        {
+            // تفاوت فقط در Include(ProductVisits) و OrderByDescending است
+            return await _context.Products
+                .Include(p => p.ProductVisits) // برای محاسبه Sum بازدید
+                .Include(p => p.ProductSells).ThenInclude(s => s.Seller) // برای مپ کردن اولیه
+                .Where(p => p.IsActive && p.ProductSells.Any())
+                .OrderByDescending(p => p.ProductVisits.Sum(v => v.Count)) // <-- تغییر یافته (پربازدیدترین)
+                .Take(10) // در دیتابیس اجرا می‌شود
+                .ToListAsync();
+        }
+        public IQueryable<Product> SearchProductsByTitleQuery(string filter)
+        {
+            var filterText = filter.Trim().ToLower();
+
+            // این متد کوئری را اجرا نمی‌کند، فقط آن را می‌سازد
+            return _context.Products
+                .Where(p => p.Title.ToLower().Contains(filterText));
         }
     }
 }

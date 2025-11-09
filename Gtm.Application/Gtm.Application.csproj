@@ -18,8 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="AdminDashbord\Command\" />
     <Folder Include="PostServiceApp\PostCalculateApp\Query\" />
     <Folder Include="PostServiceApp\PostSettingApp\Query\" />
+    <Folder Include="ShopApp\ProductVisitApp\Command\" />
   </ItemGroup>
 
 </Project>

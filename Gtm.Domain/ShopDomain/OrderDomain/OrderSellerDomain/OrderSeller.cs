@@ -1,4 +1,5 @@
-﻿using Gtm.Domain.ShopDomain.OrderDomain.OrderItemDomain;
+﻿using Gtm.Domain.PostDomain.Postgg;
+using Gtm.Domain.ShopDomain.OrderDomain.OrderItemDomain;
 using Gtm.Domain.ShopDomain.SellerDomain;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,8 @@ namespace Gtm.Domain.ShopDomain.OrderDomain.OrderSellerDomain
         public int DiscountId { get; private set; }
         public int DiscountPercent { get; private set; }
         public string DiscountTitle { get; private set; }
+        public int PostId { get; private set; }
+        public string? PostTitle { get; private set; }
         public int PostPrice { get; private set; }
         public Order Order { get; private set; }
         public List<OrderItem> OrderItems { get; private set; }
@@ -38,10 +41,14 @@ namespace Gtm.Domain.ShopDomain.OrderDomain.OrderSellerDomain
             PostPrice = 0;
             OrderItems = new();
             DiscountTitle = "";
+            PostId = 0;
+            PostTitle = "";
         }
-        public void AddPostPrice(int price)
+        public void AddPostPrice(int price, int postId, string postTitle)
         {
             PostPrice = price;
+            PostId = postId;
+            PostTitle = postTitle;
         }
         public void AddDiscount(int discountId, int discountPercent, string discountTitle)
         {

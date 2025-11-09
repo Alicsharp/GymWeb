@@ -52,14 +52,15 @@ namespace Gtm.Application.StoresServiceApp.StroreApp.Query
             };
             var seller = await _sellerRepository.GetByIdAsync(model.SellerId);
             model.SellerTitle = seller.Title;
-            model.StoreProducts.ForEach(async x =>
+            foreach (var x in model.StoreProducts)
             {
                 var productsell = await _productSellRepository.GetProductSellWithProductAsync(x.ProductSellId);
                 x.ProductId = productsell.ProductId;
                 x.ProductTitle = productsell.Product.Title;
                 x.Unit = productsell.Unit;
                 x.ProductImageName = productsell.Product.ImageName;
-            });
+            }
+
             return model;
         }
     }

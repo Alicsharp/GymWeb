@@ -2,6 +2,7 @@
 using Gtm.Contract.PostContract.CityContract.Command;
 using Gtm.Contract.PostContract.CityContract.Query;
 using Gtm.Domain.PostDomain.CityAgg;
+using Gtm.Domain.PostDomain.StateAgg;
 using Gtm.InfraStructure.RepoImple.CommentRepo;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -83,11 +84,44 @@ namespace Gtm.InfraStructure.RepoImple.PostServiceRepo
                 .SingleOrDefaultAsync(predicate);
         }
 
+        public async Task<City?> GetCityWithStateByIdAsync(int Id)
+        {
+            return await _context.Cities
+               .Include(c => c.State)
+        .SingleOrDefaultAsync(c => c.Id == Id );
+        }
+
         public async Task<City?> GetCityWithStateForSellerAsync(int cityId, int stateId)
         {
             return await _context.Cities
                .Include(c => c.State)
         .SingleOrDefaultAsync(c => c.Id == cityId && c.StateId == stateId);
+        }
+        public async Task<int> GetCityOfSeller(int sellerId)
+        {
+            var seller = await _context.Sellers
+                .SingleOrDefaultAsync(s => s.Id == sellerId);
+
+            if (seller == null)
+                return 0;
+
+            return seller.CityId;
+        }
+        public async Task<List<City>> GetCitiesWithStateAsync(IEnumerable<int> cityIds)
+        {
+            return await _context.Cities
+                .Include(c => c.State)
+                .Where(c => cityIds.Contains(c.Id))
+                .ToListAsync();
+        }
+
+        public async Task<City> GetCityWithStateAsync(int CityId, int StateId)
+        {
+            // منطق فیلتر دقیقاً همان چیزی است که در مثال خود استفاده کردید
+            return await _context.Cities
+                .Include(c => c.State)
+                .AsNoTracking() // برای بهینه‌سازی (اگر فقط قصد خواندن دارید)
+                .SingleAsync(c => c.Id == CityId && c.StateId == StateId);
         }
     }
 }

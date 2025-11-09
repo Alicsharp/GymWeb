@@ -14,12 +14,12 @@ namespace Gtm.Domain.TransactionDomian
         {
             UserId = userId;
             Price = price;
-            RefId = "";
+            RefId = ""; //کد مرجع تراکنش از درگاه
             Portal = portal;
             Status = TransactionStatus.نا_موفق;
             TransactionFor = transactionFor;
             OwnerId = ownerId;
-            Authority = authority;
+            Authority = authority; //کد یکتای موقت که درگاه پرداخت برای هر تراکنش جدید تولید می‌کند
         }
         public void AddWalletId(int walletId)
         {
@@ -37,6 +37,6 @@ namespace Gtm.Domain.TransactionDomian
         public TransactionPortal Portal { get; private set; }
         public TransactionStatus Status { get; private set; }
         public TransactionFor TransactionFor { get; private set; }
-        public int OwnerId { get; private set; }
+        public int OwnerId { get; private set; } //شناسه سفارش   -- شناسه کیف پول اگر دو کیف پول داشته باشد
     }
 }

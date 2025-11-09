@@ -33,7 +33,7 @@ namespace Gtm.WebApp.Controllers
                 Success = false,
                 TransactionFor = TransactionFor.Wallet
             };
-            var transactiom = await _mediator.Send(new GetForCheckPaymentQuery("A000000000000000000000000000000000"));
+            var transactiom = await _mediator.Send(new GetForCheckPaymentQuery(authority));
             model.Price = transactiom.Value.Price;
             model.TransactionFor = transactiom.Value.TransactionFor;
             model.OwnerId = transactiom.Value.OwnerId;
@@ -43,7 +43,7 @@ namespace Gtm.WebApp.Controllers
                 Verification res = await payment.Verification(new Dto.Payment.DtoVerification
                 {
                     Amount = transactiom.Value.Price,
-                    Authority = "A000000000000000000000000000000000",
+                     Authority = authority,
                     //Authority = authority,
                     
                     MerchantId = _data.MerchentZarinPall

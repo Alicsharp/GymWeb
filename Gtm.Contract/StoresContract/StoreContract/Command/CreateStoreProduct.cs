@@ -10,9 +10,13 @@ namespace Gtm.Contract.StoresContract.StoreContract.Command
             Type = type;
             Count = count;
         }
+        public CreateStoreProduct()
+        {
 
-        public int ProductSellId { get; private set; }
-        public StoreProductType Type { get; private set; }
-        public int Count { get; private set; }
+        }
+        public int ProductSellId { get; set; }
+        public StoreProductType Type { get; set; }
+        public int Count { get; set; }
     }
+
 }

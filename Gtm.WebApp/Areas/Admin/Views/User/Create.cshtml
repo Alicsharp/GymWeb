@@ -1,6 +1,8 @@
 ﻿@using Utility.Domain.Enums
  @model Gtm.Contract.UserContract.Command.CreateUserDto
 
+ 
+
 <div class="modal-header">
     <button type="button" class="close" onclick="closeAjaxModal()">
         <span aria-hidden="true">&times;</span>
@@ -8,12 +10,9 @@
     <h4 class="modal-title" id="ajax-modal-title"></h4>
     <span class="text-danger" id="ajax-modal-valid"></span>
 </div>
+
 <form enctype="multipart/form-data" asp-action="Create"
-      id="form-ajax-admin"
-      data-ajax="true"
-      data-ajax-method="POST"
-      data-ajax-failure="AjaxAdminFaild"
-      data-ajax-success="AjaxAdminSucceded">
+      id="form-ajax-admin">
     <div class="modal-body">
         <div class="col-md-6">
             <div class="form-group">
@@ -37,32 +36,108 @@
                 <span class="text-danger" asp-validation-for="Password"></span>
             </div>
         </div>
+
         <div class="col-md-6">
             <img width="300" id="destinationImage" class="img-thumbnail"
                  src="/Images/User/default.png" />
             <div class="form-group">
                 <label asp-for="AvatarFile"></label>
-                <input type="file" class="form-control" asp-for="AvatarFile" onchange="ReadImageUrlAjax('AvatarFile','destinationImage')">
+                <input type="file" class="form-control" asp-for="AvatarFile"
+                       onchange="ReadImageUrlAjax('AvatarFile','destinationImage')">
                 <span class="text-danger" asp-validation-for="AvatarFile"></span>
             </div>
-            <div class="form-group">
+             <div class="form-group">
                 <label asp-for="UserGender"></label>
                 <select class="form-control" asp-for="UserGender">
-                    @foreach (var item in Enum.GetValues(typeof(Gender)).Cast<Gender>())
+                    
+               @*      @foreach (var item in Enum.GetValues(typeof(Gender)).Cast<Gender>())
                     {
-                        <option value="@item">
-                            @item.ToString().Replace("_", " ")
-                        </option>
-                    }
+                        <option value="@item">@item.ToString().Replace("_", " ")</option>
+                    } *@
+                    <option value="">-- انتخاب جنسیت --</option>
+                    <option value="0" selected>مرد</option>
+                    <option value="1">زن</option>
+                    <option value="2">نامشخص</option>
+                    <option value="3">male</option>
+
                 </select>
-                <span class="text-danger" asp-validation-for="UserGender"></span>
-            </div>
+            </div>  
         </div>
     </div>
+
     <div class="modal-footer">
         <button type="submit" class="btn btn-success">ذخیره</button>
         <button type="button" class="btn btn-danger pull-left" onclick="closeAjaxModal()">خروج</button>
     </div>
 </form>
 
- 
+<script>
+    // هندل فرم Create
+    $(document).on("submit", "#form-ajax-admin", function (e) {
+        e.preventDefault();
+
+        var form = $(this)[0];
+        var formData = new FormData(form);
+
+        $.ajax({
+            url: $(form).attr("action"),
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                console.log(res); // برای دیباگ
+
+                if (res.success) {
+                    closeAjaxModal();
+
+                    Swal.fire({
+                        title: "موفقیت",
+                        text: "عملیات با موفقیت انجام شد",
+                        icon: "success",
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2500);
+                } else {
+                    // پاک کردن خطاهای قبلی
+                    $("span.text-danger").text("");
+
+                    let errorList = [];
+
+                    if (res.errors) {
+                        for (var key in res.errors) {
+                            if (res.errors.hasOwnProperty(key)) {
+                                var messages = res.errors[key];
+                                var span = $("[data-valmsg-for='" + key + "']");
+                                if (span.length) {
+                                    span.text(messages.join(" , "));
+                                }
+                                errorList.push(...messages);
+                            }
+                        }
+                    }
+
+                    // نمایش خطاها داخل SweetAlert
+                    if (errorList.length > 0) {
+                        Swal.fire({
+                            title: "خطا",
+                            html: "<ul style='text-align:right;direction:rtl'>" +
+                                  errorList.map(e => "<li>" + e + "</li>").join("") +
+                                  "</ul>",
+                            icon: "error"
+                        });
+                    } else {
+                        Swal.fire("خطا", "عملیات ناموفق بود", "error");
+                    }
+                }
+            },
+            error: function () {
+                Swal.fire("خطا", "اشکال در ارتباط با سرور!", "error");
+            }
+        });
+    });
+</script>
