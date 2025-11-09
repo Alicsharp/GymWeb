@@ -14,9 +14,12 @@ namespace Gtm.Contract.StoresContract.StoreContract.Command
             Description = description;
             Products = products;
         }
+        public CreateStore()
+        {
 
-        public int SellerId { get; private set; }
-        public string Description { get; private set; }
-        public List<CreateStoreProduct> Products { get; private set; }
+        }
+        public int SellerId { get; set; }
+        public string Description { get; set; }
+        public List<CreateStoreProduct> Products { get; set; }
     }
 }

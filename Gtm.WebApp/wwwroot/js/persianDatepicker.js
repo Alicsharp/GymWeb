@@ -1,18 +1,18 @@
 ﻿/*!
-* persianDatepicker v0.1.0
-* http://github.com/behzadi/persianDatepicker/
-*
-* Copyright (c) 2013 Mohammad hasan Behzadi  All rights reserved.
-*
-* Released under the MIT license.
-*
-* jalali Date Functions
-*
-* Date: Tue Jan 1 2013
-* 
-* Last Update: Mon April 15 2019
-* 
-*/
+ * persianDatepicker v0.1.0
+ * http://github.com/behzadi/persianDatepicker/
+ *
+ * Copyright (c) 2013 Mohammad hasan Behzadi  All rights reserved.
+ *
+ * Released under the MIT license.
+ *
+ * jalali Date Functions
+ *
+ * Date: Tue Jan 1 2013
+ * 
+ * Last Update: Mon April 15 2019
+ * 
+ */
 ;
 (function ($) {
     $.fn.persianDatepicker = function (options) {

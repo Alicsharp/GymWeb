@@ -107,8 +107,8 @@ function CreateTransaction() {
     }
     else {
         priceValid.text("");
-        $("form#form-transaction").submit();
-    }
+            $("form#form-transaction").submit();
+        }
 }
 function GetCategoriesForAddProductSell() {
     var selectParent = $("select#CategoryId");
@@ -136,12 +136,12 @@ function GetSubCategoriesForAddProductSell() {
     }
     else {
         $("span#CategoryIdValid").text("");
-
+      
         $.ajax({
             type: "Post",
             url: `/UserPanel/Product/Categories/${id}`
         }).done(function (res) {
-
+           
             debugger;
             var model = JSON.parse(res);
             var cate1 = `<option value=${id}> محصولات این سردسته</option>`;
@@ -153,7 +153,7 @@ function GetSubCategoriesForAddProductSell() {
             selectChild.select2();
         });
     }
-
+    
 }
 function GetProductsFotCategory() {
     var selectProduct = $("select#ProductId");

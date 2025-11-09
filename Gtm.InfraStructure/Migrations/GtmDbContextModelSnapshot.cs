@@ -753,13 +753,6 @@ namespace Gtm.InfraStructure.Migrations
                     b.Property<int>("OrderStatus")
                         .HasColumnType("int");
 
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PostTitle")
-                        .HasMaxLength(600)
-                        .HasColumnType("nvarchar(600)");
-
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("datetime2");
 
@@ -767,6 +760,8 @@ namespace Gtm.InfraStructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrderAddressId");
 
                     b.ToTable("Orders", (string)null);
                 });
@@ -875,8 +870,14 @@ namespace Gtm.InfraStructure.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
                     b.Property<int>("PostPrice")
                         .HasColumnType("int");
+
+                    b.Property<string>("PostTitle")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SellerId")
                         .HasColumnType("int");
@@ -1119,6 +1120,30 @@ namespace Gtm.InfraStructure.Migrations
                     b.ToTable("ProductSells", (string)null);
                 });
 
+            modelBuilder.Entity("Gtm.Domain.ShopDomain.ProductVisitAgg.ProductVisit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductVisits");
+                });
+
             modelBuilder.Entity("Gtm.Domain.ShopDomain.SellerDomain.Seller", b =>
                 {
                     b.Property<int>("Id")
@@ -1287,6 +1312,27 @@ namespace Gtm.InfraStructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ShopSettings", (string)null);
+                });
+
+            modelBuilder.Entity("Gtm.Domain.ShopDomain.WishListAgg.WishList", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("WishLists");
                 });
 
             modelBuilder.Entity("Gtm.Domain.SiteDomain.BannerAgg.Baner", b =>
@@ -1977,6 +2023,17 @@ namespace Gtm.InfraStructure.Migrations
                     b.Navigation("Package");
                 });
 
+            modelBuilder.Entity("Gtm.Domain.ShopDomain.OrderDomain.Order", b =>
+                {
+                    b.HasOne("Gtm.Domain.ShopDomain.OrderDomain.OrderAddressDomain.OrderAddress", "OrderAddress")
+                        .WithMany()
+                        .HasForeignKey("OrderAddressId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("OrderAddress");
+                });
+
             modelBuilder.Entity("Gtm.Domain.ShopDomain.OrderDomain.OrderItemDomain.OrderItem", b =>
                 {
                     b.HasOne("Gtm.Domain.ShopDomain.OrderDomain.OrderSellerDomain.OrderSeller", "OrderSeller")
@@ -2075,6 +2132,17 @@ namespace Gtm.InfraStructure.Migrations
                     b.Navigation("Seller");
                 });
 
+            modelBuilder.Entity("Gtm.Domain.ShopDomain.ProductVisitAgg.ProductVisit", b =>
+                {
+                    b.HasOne("Gtm.Domain.ShopDomain.ProductDomain.Product", "Product")
+                        .WithMany("ProductVisits")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Gtm.Domain.ShopDomain.SellerPackageFeatureDomain.SellerPackageFeature", b =>
                 {
                     b.HasOne("Gtm.Domain.ShopDomain.SellerPackageDomain.SellerPackage", "SellerPackage")
@@ -2084,6 +2152,17 @@ namespace Gtm.InfraStructure.Migrations
                         .IsRequired();
 
                     b.Navigation("SellerPackage");
+                });
+
+            modelBuilder.Entity("Gtm.Domain.ShopDomain.WishListAgg.WishList", b =>
+                {
+                    b.HasOne("Gtm.Domain.ShopDomain.ProductDomain.Product", "Product")
+                        .WithMany("WishLists")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Gtm.Domain.SiteDomain.MenuAgg.Menu", b =>
@@ -2209,6 +2288,10 @@ namespace Gtm.InfraStructure.Migrations
                     b.Navigation("ProductGalleries");
 
                     b.Navigation("ProductSells");
+
+                    b.Navigation("ProductVisits");
+
+                    b.Navigation("WishLists");
                 });
 
             modelBuilder.Entity("Gtm.Domain.ShopDomain.ProductSellDomain.ProductSell", b =>

@@ -50,7 +50,7 @@ namespace Gtm.WebApp.Areas.UserPanel.Controllers.Seller
             // ایجاد تخفیف فروش
             var createResult = await _mediator.Send(new CreateProductSellDiscountCommand(model, productId));
 
-            if (createResult.IsError)
+            if (createResult.IsError == true)
                 return BadRequest(new { message = createResult.FirstError.Description });
 
             return Ok(new { message = "تخفیف با موفقیت ایجاد شد." });

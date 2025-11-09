@@ -13,7 +13,8 @@ using Utility.Domain.Enums;
 
 namespace Gtm.Application.WalletServiceApp.Query
 {
-    public record GetUserWalletsForAdminQuery(int pageId, int userId, int take,OrderingWalletSearch orderBy, WalletTypeSearch type, WalletWhySerch walletWhy):IRequest<ErrorOr<UserWalletForAdminPaging>>;
+    public record GetUserWalletsForAdminQuery(int pageId, int userId, int take,
+            OrderingWalletSearch orderBy,WalletTypeSearch type, WalletWhySerch walletWhy):IRequest<ErrorOr<UserWalletForAdminPaging>>;
     public class GetUserWalletsForAdminQueryHandler : IRequestHandler<GetUserWalletsForAdminQuery, ErrorOr<UserWalletForAdminPaging>>
     {
         private readonly IUserRepo _userRepository;

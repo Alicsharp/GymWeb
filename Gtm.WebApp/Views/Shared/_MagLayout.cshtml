@@ -7,7 +7,7 @@
     <meta name="description" content="">
    @await Component.InvokeAsync("Fav") 
     <title>@ViewData["Title"]</title>
-      @RenderSection("SEO", false)  
+    @RenderSection("SEO", false)
     <link rel="stylesheet" href="/MagAssets/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/Assets/css/font-awesome.min.css" />
     <link rel="stylesheet" href="/MagAssets/css/font-icons.css" />
@@ -85,7 +85,6 @@
 
     </main>
 
-
     <!-- jQuery Scripts -->
     <script src="/MagAssets/js/jquery.min.js"></script>
     <script src="/MagAssets/js/bootstrap.min.js"></script>
@@ -102,7 +101,6 @@
     <script src="/js/site.js"></script>
     <script src="/js/blog.js"></script>
     @RenderSection("Scripts", false)
-    @RenderSection("Styles", false)
 </body>
 
 </html>

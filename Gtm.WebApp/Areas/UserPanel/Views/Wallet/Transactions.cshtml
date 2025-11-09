@@ -21,7 +21,7 @@
                     <thead class="thead-light">
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">مبلغsssssss (تومان)</th>
+                            <th scope="col">مبلغ (تومان)</th>
                             <th scope="col">کد تراکنش</th>
                             <th scope="col">درگاه بانکی </th>
                             <th scope="col">وضعیت</th>
@@ -43,7 +43,7 @@
                                     <td>
                                         @item.RefId
                                     </td>
-                                    <td>@item.Portal.ToString()</td>
+                                    <td>@item.Portal.ToString().Replace("_", " ")</td>
                                     <td>
                                         @if (item.Status == TransactionStatus.موفق)
                                         {

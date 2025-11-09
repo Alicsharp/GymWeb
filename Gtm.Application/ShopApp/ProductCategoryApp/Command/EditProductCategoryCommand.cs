@@ -70,7 +70,7 @@ namespace Gtm.Application.ShopApp.ProductCategoryApp.Command
             category.Edit(command.Title, slug, imageName, command.ImageAlt);
 
             // ذخیره تغییرات
-            if (await _productCategoryRepository.SaveChangesAsync())
+            if (await _productCategoryRepository.SaveChangesAsync() )
             {
                 // حذف تصاویر قدیمی اگر تصویر جدید آپلود شده بود
                 if (command.ImageFile != null && !string.IsNullOrEmpty(oldImageName))

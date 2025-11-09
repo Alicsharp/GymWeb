@@ -23,10 +23,12 @@ using Gtm.Domain.ShopDomain.ProductDomain;
 using Gtm.Domain.ShopDomain.ProductFeaureDomain;
 using Gtm.Domain.ShopDomain.ProductGalleryDomain;
 using Gtm.Domain.ShopDomain.ProductSellDomain;
+using Gtm.Domain.ShopDomain.ProductVisitAgg;
 using Gtm.Domain.ShopDomain.SellerDomain;
 using Gtm.Domain.ShopDomain.SellerPackageDomain;
 using Gtm.Domain.ShopDomain.SellerPackageFeatureDomain;
 using Gtm.Domain.ShopDomain.ShopDomain;
+using Gtm.Domain.ShopDomain.WishListAgg;
 using Gtm.Domain.SiteDomain.BannerAgg;
 using Gtm.Domain.SiteDomain.MenuAgg;
 using Gtm.Domain.SiteDomain.SitePageAgg;
@@ -105,6 +107,9 @@ namespace Gtm.InfraStructure
         public DbSet<StoreProduct> StoreProducts { get; set; }
         public DbSet<OrderDiscount> OrderDiscounts { get; set; }
         public DbSet<ProductDiscount> ProductDiscounts { get; set; }
+
+        public DbSet<ProductVisit> ProductVisits {  get; set; }
+        public DbSet<WishList> WishLists {  get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 

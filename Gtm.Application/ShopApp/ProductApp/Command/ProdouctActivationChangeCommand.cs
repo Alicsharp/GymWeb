@@ -33,7 +33,7 @@ namespace Gtm.Application.ShopApp.ProductApp.Command
 
             var product = await _productRepository.GetByIdAsync(request.id);
             product.ActivationChange();
-
+            var pr = product;
             if (await _productRepository.SaveChangesAsync(cancellationToken))
                 return Result.Success;
 

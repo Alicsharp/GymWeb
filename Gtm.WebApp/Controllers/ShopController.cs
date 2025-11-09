@@ -3,6 +3,7 @@ using Gtm.Contract.OrderContract.Command;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using Utility.Appliation.Auth;
 using Utility.Domain.Enums;
 
 namespace Gtm.WebApp.Controllers
@@ -10,9 +11,12 @@ namespace Gtm.WebApp.Controllers
     public class ShopController : Controller
     {
         private readonly IMediator _mediator;
-        public ShopController(IMediator mediator)
+        private readonly IAuthService _authService;
+
+        public ShopController(IMediator mediator, IAuthService authService)
         {
             _mediator = mediator;
+            _authService = authService;
         }
 
         [Route("/Shop/{id?}")]
@@ -22,6 +26,7 @@ namespace Gtm.WebApp.Controllers
             return View(model.Value);
         }
         [Route("/Cart")]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public IActionResult Cart()
         {
             List<ShopCartViewModel> model = new();
@@ -32,7 +37,10 @@ namespace Gtm.WebApp.Controllers
                 model = JsonSerializer.Deserialize<List<ShopCartViewModel>>(cartJson);
 
             }
-            return View(model);
+            //return View(model);
+            if (_authService.IsUserLogin())
+                return Redirect("/UserPanel/Order/Order");
+            return View();
         }
 
         [Route("/Product/{id}/{slug}")]

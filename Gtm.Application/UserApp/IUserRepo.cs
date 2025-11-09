@@ -1,4 +1,5 @@
 ﻿using Gtm.Domain.UserDomain.UserDm;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,9 @@ namespace Gtm.Application.UserApp
     {
         Task<User?> GetByMobileAsync(string mobile);
         Task<List<User>> GetByIdsAsync(List<int> ids);
-
+        Task<List<User>> GetUsersByIdsAsync(IEnumerable<int> userIds, CancellationToken cancellationToken = default);
+        Task<List<User>> GetLast8UsersAsync(CancellationToken cancellationToken = default);
     }
+
 }
+

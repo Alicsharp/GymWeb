@@ -30,6 +30,7 @@ namespace Gtm.Application.ShopApp.ProductSellApp.Command
             }
 
             var sell = await _productSellRepository.GetByIdAsync(request.id);
+           
             if (sell == null)
             {
                 return Error.NotFound(

@@ -1,6 +1,5 @@
 ﻿@using Gtm.Contract.SiteContract.SitePageContract.Query
 @using Utility.Domain.Enums
- 
 @model List< SitePageAdminQueryModel>
 @{
     ViewData["Title"] = "لیست صفحات";
@@ -55,15 +54,15 @@
                                         }
                                         <div class="checkbox-wrapper-49"
                                              onclick="AjaxSweetNotDelete(
-                                 '@title',
-                                 '@text',
-                                 'question',
-                                 '@confirm',
-                                  '@cancel',
-                                   '/Admin/SitePage/Active/@item.Id')">
+                                         '@title',
+                                         '@text',
+                                         'question',
+                                         '@confirm',
+                                          '@cancel',
+                                           '/Admin/SitePage/Active/@item.Id')">
                                             <div class="block">
                                                 <input data-index="pie_@item.Id" id="pie-@item.Id"
-                                                @(item.Active ? "checked" : "") type="checkbox" />
+                                                       @(item.Active ? "checked" : "") type="checkbox" />
                                                 <label for="pie-@item.Id"></label>
                                             </div>
                                         </div>

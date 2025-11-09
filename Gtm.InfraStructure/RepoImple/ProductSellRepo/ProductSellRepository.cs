@@ -36,9 +36,7 @@ namespace Gtm.InfraStructure.RepoImple.ProductSellRepo
                 .Include(ps => ps.Product)
                 .SingleAsync(ps => ps.Id == productSellId, cancellationToken);
         }
-
-        public async Task<ProductSell?>    
-            GetProductSellByIdAsync(int productSellId, CancellationToken cancellationToken = default)
+        public async Task<ProductSell?>  GetProductSellByIdAsync(int productSellId, CancellationToken cancellationToken = default)
         {
             return await _context.ProductSells
                 .Include(ps => ps.Product)
@@ -59,7 +57,6 @@ namespace Gtm.InfraStructure.RepoImple.ProductSellRepo
 
             return query;
         }
-
         public async Task<ProductSell> GetProductSellWithProductAsync(int productSellId)
         {
 
@@ -70,7 +67,6 @@ namespace Gtm.InfraStructure.RepoImple.ProductSellRepo
                 throw new Exception("ProductSell not found!"); // یا مدیریت مناسب دیگر
             return productSell;
         }
-
         public async Task<List<ProductForAddStoreQueryModel>> GetProductsForStoreCreation(int sellerId)
         {
             return await _context.ProductSells
@@ -86,9 +82,6 @@ namespace Gtm.InfraStructure.RepoImple.ProductSellRepo
            })
            .ToListAsync();
         }
-
-
-
         public IQueryable<ProductSell> GetProductSellsForSeller(int sellerId, string? filter = null)
         {
             var query = _context.ProductSells
@@ -102,7 +95,6 @@ namespace Gtm.InfraStructure.RepoImple.ProductSellRepo
 
             return query;
         }
-
         public async Task<ErrorOr<Success>> IsProductSellForUserAsync(int userId, int id)
         {
             var productSell = await _context.ProductSells
@@ -123,6 +115,34 @@ namespace Gtm.InfraStructure.RepoImple.ProductSellRepo
         {
             var sell = await _context.ProductSells.FindAsync(productSellId);
             return sell.ProductId;
+        }
+
+        public async Task<ProductSell> GetById(int i)
+        {
+        return    await _context.ProductSells.FindAsync(i);
+        }
+        public async Task<ProductSell> GetProductSellWithProductAsync(int productSellId, CancellationToken cancellationToken = default)
+        {
+            // این دقیقاً همان کدی است که شما ارائه کردید
+            var productSell = await _context.ProductSells
+                .Include(p => p.Product)
+                .SingleOrDefaultAsync(ps => ps.Id == productSellId, cancellationToken);
+
+            return productSell;
+        }
+        public async Task<List<ProductSell>> GetSellsWithSellerAsync(List<int> productSellIds)
+        {
+            return await _context.ProductSells
+                .Include(ps => ps.Seller)
+                .Where(ps => productSellIds.Contains(ps.Id))
+                .ToListAsync();
+        }
+        public async Task<ProductSell?> GetWithProductAsync(int productSellId, CancellationToken cancellationToken = default)
+        {
+            return await _context.ProductSells
+                .Include(ps => ps.Product)
+                .AsNoTracking()
+                .SingleOrDefaultAsync(ps => ps.Id == productSellId, cancellationToken);
         }
     }
 }

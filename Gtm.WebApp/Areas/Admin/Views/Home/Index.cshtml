@@ -1,0 +1,98 @@
+﻿﻿
+    @{
+        ViewData["Title"] = "پنل ادمین";
+    }
+    @await Component.InvokeAsync("AdminData")
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">گزارش سالانه</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12" id="chartLoadingIndexDiv" style="text-align: center;">
+                            <img src="/Images/loading.svg" style="height: 300px;" />
+                        </div>
+                        <div class="col-md-12" id="chartIndexDiv">
+                            <p class="text-center" id="button-years-chart-year">
+
+                            </p>
+                            <p class="text-center">
+                                <strong id="title-chart-year"></strong>
+                            </p>
+                            <div class="chart" style="height: 300px;" id="ParentChartDiv">
+                                <!-- Sales Chart Canvas -->
+                                <canvas id="salesChart" style="height: 300px;"></canvas>
+                            </div>
+                            <!-- /.chart-responsive -->
+                        </div>
+
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- ./box-body -->
+                <div class="box-footer">
+                    <div class="row">
+                        @*  <div class="col-sm-3 col-xs-6">
+                        <div class="description-block border-right">
+                            <span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 17%</span>
+                            <h5 class="description-header"> 35,210.43 تومان</h5>
+                            <span class="description-text">کل گردش حساب</span>
+                        </div>
+                        <!-- /.description-block -->
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-sm-3 col-xs-6">
+                        <div class="description-block border-right">
+                            <span class="description-percentage text-yellow"><i class="fa fa-caret-left"></i> 0%</span>
+                            <h5 class="description-header">10,390.90 تومان</h5>
+                            <span class="description-text">فروش کل</span>
+                        </div>
+                        <!-- /.description-block -->
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-sm-3 col-xs-6">
+                        <div class="description-block border-right">
+                            <span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 20%</span>
+                            <h5 class="description-header">24,813.53 تومان</h5>
+                            <span class="description-text">سود کل</span>
+                        </div>
+                        <!-- /.description-block -->
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-sm-3 col-xs-6">
+                        <div class="description-block">
+                            <span class="description-percentage text-red"><i class="fa fa-caret-down"></i> 18%</span>
+                            <h5 class="description-header">1200</h5>
+                            <span class="description-text">اهداف</span>
+                        </div>
+                        <!-- /.description-block -->
+                    </div> *@
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.box-footer -->
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            @await Component.InvokeAsync("AdminLastUser")
+            @await Component.InvokeAsync("AdminLastOrder")
+        </div>
+    </div>
+    @section Scripts {
+        <script src="/js/chart.js"></script>
+    }

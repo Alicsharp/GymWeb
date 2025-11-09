@@ -1,5 +1,7 @@
 ﻿using Gtm.Application.ShopApp.ProductGalleryApp;
+using Gtm.Contract.ProductGalleryContract.Query;
 using Gtm.Domain.ShopDomain.ProductGalleryDomain;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +18,17 @@ namespace Gtm.InfraStructure.RepoImple.ProductGalleryRepo
         {
             _context = context;
         }
+        public async Task<List<GalleryForProductSingleQueryModel>> GetProductSingleGalleryAsync(int productId)
+        {
+            return await _context.ProductGalleries
+                .Where(c => c.ProductId == productId)
+                .Select(p => new GalleryForProductSingleQueryModel
+                {
+                    ImageAlt = p.ImageAlt,
+                    ImageName = p.ImageName
+                })
+                .ToListAsync();
+        }
+
     }
 }

@@ -16,6 +16,7 @@ namespace Gtm.Application.WalletServiceApp
         Task<ErrorOr<int>> DepositByUserAsync(CreateWalletWithWhy command);
         Task<int> GetUserBalanceAsync(int userId);
         int GetWalletAmount(int userId);
+        Task<int> GetWalletAmountAsync(int userId);
 
     }
 }

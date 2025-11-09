@@ -1,9 +1,8 @@
 ﻿@using Gtm.Contract.SeoContract.Query
 @model  SeoUiQueryModel
-@* 
-<meta name="og:title" content="عنوان رو چک کن" />
-<meta name="og:title" content="@Model.MetaTitle" />  
- @if (!string.IsNullOrEmpty(Model.MetaDescription))
+ 
+  <meta name="og:title" content="@Model.MetaTitle" />
+@ورهif (!string.IsNullOrEmpty(Model.MetaDescription))
 {
     <meta content="@Model.MetaDescription" name="description" />
 }
@@ -26,4 +25,4 @@ else
 @if (!string.IsNullOrEmpty(Model.Canonical))
 {
     <meta href="@Model.Canonical" rel="canonical" />
-} *@
+}  

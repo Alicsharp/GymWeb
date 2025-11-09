@@ -7,6 +7,7 @@ using Gtm.Contract.StoresContract.StoreContract.Command;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Utility.Appliation.Auth;
 
@@ -51,7 +52,7 @@ namespace Gtm.WebApp.Areas.UserPanel.Controllers.Seller
             return Json(JsonConvert.SerializeObject(res.Value));
         }
         [HttpPost]
-        public async Task<bool> Create(string model)
+        public async Task<IActionResult> Create(string model)
         {
             var _userId = _authService.GetLoginUserId();
             var res = JsonConvert.DeserializeObject<CreateStore>(model);
@@ -59,12 +60,24 @@ namespace Gtm.WebApp.Areas.UserPanel.Controllers.Seller
             // بررسی قبل از ایجاد فروشگاه
             var isCheck = await _mediator.Send(new CheckCreateStoreCommand(res, _userId));
             if (isCheck.IsError)
-                return false;
+            {
+                // اضافه کردن خطا به ModelState
+                foreach (var error in isCheck.Errors)
+                    ModelState.AddModelError(string.Empty, error.Description);
+
+                // برگرداندن ویو با داده‌های وارد شده
+                return View(res);
+            }
 
             // ایجاد فروشگاه و محصولات
             var result = await _mediator.Send(new CreateStoreCommand(_userId, res));
             if (result.IsError)
-                return false;
+            {
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError(string.Empty, error.Description);
+
+                return View(res);
+            }
 
             // به‌روزرسانی موجودی محصولات اگر وجود داشت
             if (res.Products != null && res.Products.Any())
@@ -79,8 +92,10 @@ namespace Gtm.WebApp.Areas.UserPanel.Controllers.Seller
                 ));
             }
 
-            return true;
+            // اگر همه چیز درست بود، می‌تونی ریدایرکت کنی
+            return RedirectToAction("Index");
         }
+
 
 
 

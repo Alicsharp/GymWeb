@@ -22,7 +22,9 @@ using Gtm.Application.ShopApp.ProductCategoryRelationApp;
 using Gtm.Application.ShopApp.ProductFeatureApp;
 using Gtm.Application.ShopApp.ProductGalleryApp;
 using Gtm.Application.ShopApp.ProductSellApp;
+using Gtm.Application.ShopApp.ProductVisitApp;
 using Gtm.Application.ShopApp.SellerApp;
+using Gtm.Application.ShopApp.WishListApp;
 using Gtm.Application.SiteServiceApp.BannerApp;
 using Gtm.Application.SiteServiceApp.ImageSiteApp;
 using Gtm.Application.SiteServiceApp.MenuApp;
@@ -49,6 +51,7 @@ using Gtm.InfraStructure.RepoImple.ProductFeatureRepo;
 using Gtm.InfraStructure.RepoImple.ProductGalleryRepo;
 using Gtm.InfraStructure.RepoImple.ProductRepo;
 using Gtm.InfraStructure.RepoImple.ProductSellRepo;
+using Gtm.InfraStructure.RepoImple.ProductVisitRepo;
 using Gtm.InfraStructure.RepoImple.RoleRepo;
 using Gtm.InfraStructure.RepoImple.SellerRepo;
 using Gtm.InfraStructure.RepoImple.SeoRepo;
@@ -57,6 +60,7 @@ using Gtm.InfraStructure.RepoImple.StoreRepo;
 using Gtm.InfraStructure.RepoImple.TransactionRepo;
 using Gtm.InfraStructure.RepoImple.UserRepo;
 using Gtm.InfraStructure.RepoImple.WalletRepo;
+using Gtm.InfraStructure.RepoImple.WishListRepo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -75,8 +79,8 @@ namespace Gtm.InfraStructure
             services.AddScoped<IUserPostRepo, UserPostRepository>();
             services.AddScoped<IPostOrderRepo, PostOrderRepository>();
             services.AddTransient<IStateRepo, StateRepository>();
-            services.AddTransient<ICityRepo, CityRepository>();
-            services.AddScoped<IPostRepo, PostRepository>(); 
+            services.AddTransient<Application.PostServiceApp.CityApp.ICityRepo, CityRepository>();
+            services.AddScoped<Application.PostServiceApp.PostApp.IPostRepo, PostRepository>(); 
             services.AddScoped<IPostPriceRepo, PostPriceRepository>();  
             services.AddScoped<IPackageRepo, PackageRepository>();  
             services.AddScoped<IPostSettingRepo, PostSettingRepository>();
@@ -114,6 +118,8 @@ namespace Gtm.InfraStructure
             services.AddScoped<IOrderDiscountRepository, OrderDiscountRepository>();
             services.AddScoped<IOrderRepository,OrderRepository>();
 
+            services.AddTransient<IWishListRepository, WishListRepository>();
+            services.AddTransient<IProductVisitRepository, ProductVisitRepository>();
             services.AddDbContext<GtmDbContext>(options =>options.UseSqlServer(connection),contextLifetime: ServiceLifetime.Scoped,optionsLifetime: ServiceLifetime.Scoped);
             return services;
         }

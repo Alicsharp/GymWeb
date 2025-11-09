@@ -33,5 +33,15 @@ namespace Gtm.InfraStructure.RepoImple.OrderDiscountRepo
                 .OrderBy(d => d.Id)
                 .ToListAsync(cancellationToken);
         }
+        public async Task<List<ProductDiscount>> GetActiveDiscountsForProductsAsync(List<int> productIds)
+        {
+            var now = DateTime.Now.Date;
+            return await _context.ProductDiscounts
+                .Where(p => productIds.Contains(p.ProductId) && // فقط برای 10 محصول ما
+                            p.StartDate.Date <= now &&
+                            p.EndDate.Date >= now)
+                .OrderByDescending(p => p.Percent) // مرتب‌سازی برای گرفتن بهترین تخفیف
+                .ToListAsync();
+        }
     }
 }

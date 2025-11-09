@@ -1,4 +1,5 @@
-﻿using Gtm.Domain.ShopDomain.OrderDomain.OrderSellerDomain;
+﻿using Gtm.Domain.ShopDomain.OrderDomain.OrderAddressDomain;
+using Gtm.Domain.ShopDomain.OrderDomain.OrderSellerDomain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,12 @@ namespace Gtm.Domain.ShopDomain.OrderDomain
         public int UserId { get; private set; }
         public OrderStatus OrderStatus { get; private set; }
         public OrderPayment OrderPayment { get; private set; }
-        public int OrderAddressId { get; private set; }
-        public int PostId { get; private set; }
-        public string? PostTitle { get; private set; }
         public int DiscountId { get; private set; }
         public int DiscountPercent { get; private set; }
         public string DiscountTitle { get; private set; }
         public List<OrderSeller> OrderSellers { get; private set; }
+        public int OrderAddressId { get; private set; }
+        public OrderAddress? OrderAddress { get; private set; }
         public int Price
         {
             get
@@ -56,7 +56,7 @@ namespace Gtm.Domain.ShopDomain.OrderDomain
                 var discountPrice = DiscountPercent * PaymentPriceSeller / 100;
 
 
-                return PaymentPriceSeller - discountPrice - PostPrice;
+                return PaymentPriceSeller - discountPrice + PostPrice;
             }
         }
         public Order()
@@ -69,8 +69,6 @@ namespace Gtm.Domain.ShopDomain.OrderDomain
             OrderStatus = OrderStatus.پرداخت_نشده;
             OrderPayment = OrderPayment.پرداخت_از_درگاه;
             OrderAddressId = 0;
-            PostId = 0;
-            PostTitle = "";
             DiscountId = 0;
             DiscountPercent = 0;
         }
@@ -88,12 +86,6 @@ namespace Gtm.Domain.ShopDomain.OrderDomain
             OrderAddressId = addressId;
             UpdateEntity();
         }
-        public void ChangeShipping(int postId, string postTitle)
-        {
-            PostId = postId;
-            PostTitle = postTitle;
-            UpdateEntity();
-        }
         public void AddDiscount(int discountId, int percent, string title)
         {
             DiscountId = discountId;
@@ -105,6 +97,11 @@ namespace Gtm.Domain.ShopDomain.OrderDomain
         {
             seller.OrderId = Id;
             OrderSellers.Add(seller);
+        }
+
+        public void ChangeAddress(int key)
+        {
+            OrderAddressId = key;
         }
     }
 }

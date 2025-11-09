@@ -1,4 +1,4 @@
-﻿function AjaxSweet(title1, text1, icon1, confirmButtonText1, cancelButtonText1, url1, deletedId) {
+﻿function AjaxSweet(title1, text1, icon1, confirmButtonText1, cancelButtonText1,url1,deletedId) {
     Swal.fire({
         title: title1,
         text: text1,
@@ -118,7 +118,7 @@ function AjaxSweetInput(title1, confirmButtonText1, url1, deletedId) {
             Loding();
             $.ajax({
                 type: "Get",
-                url: url1 + result.value
+                url: url1 +  result.value 
             }).done(function (res) {
                 if (res) {
                     AlertSweetTimer("عملیات موفق", "success", 3000);
@@ -166,32 +166,33 @@ function ChooseParentBlogCategory(parentSelect, childSelect) {
         });
     }
 }
-function CheckBlogCategories(parentId, subIdInput, childSelect) {
+function CheckBlogCategories(parentId, subId, childSelect) {
     var id = $(`input#${parentId}`).val();
-    var subId = $(`input#${subIdInput}`).val();
+    var subId = $(`input#${subId}`).val();
     if (id > 0) {
         $.ajax({
             type: "Get",
-            url: `/Admin/Article/GetCategories/${id}`
+            url: `/Admin/Blog/GetCategories/${id}`
         }).done(function (res) {
             var model = [];
             var childEleman = $(`select#${childSelect}`);
             childEleman.html("");
             model = JSON.parse(res);
-
             if (subId > 0) {
+
                 var opt = `<option value=0>انتخاب زیر گروه</option>`;
                 childEleman.append(opt);
-            } else {
+            }
+            else {
                 var opt = `<option value=0 selected="selected">انتخاب زیر گروه</option>`;
                 childEleman.append(opt);
             }
-
             model.forEach(x => {
                 if (x.Id == subId) {
-                    var y = `<option value=${x.Id} selected="selected"> ${x.Title}</option>`;
+                    var y = `<option value=${x.Id} selected="selcted"> ${x.Title}</option>`;
                     childEleman.append(y);
-                } else {
+                }
+                else {
                     var y = `<option value=${x.Id}> ${x.Title}</option>`;
                     childEleman.append(y);
                 }
@@ -199,7 +200,6 @@ function CheckBlogCategories(parentId, subIdInput, childSelect) {
         });
     }
 }
-
 function AjaxAdminGet(url, title) {
     $.get(url, function (res) {
         var content = $("div#modal-content-default-ajax");
@@ -245,6 +245,7 @@ function AjaxAdminSucceded(res) {
         span.text(model.Message);
     }
 }
+ 
 function AjaxAdminFaild() {
     closeAjaxModal();
     AlertSweet("عملیات ناموفق", "خطای سیستمی !!!", "error");
@@ -252,4 +253,59 @@ function AjaxAdminFaild() {
 function ChangePagination(page) {
     $("input#inputPageId").val(page);
     $("form#formSearchAdmin").submit();
+}
+function GetAdminMessages() {
+    var parent = $("#UlMessageNotifications");
+    var header = $("#UlMessageNotificationsHeader");
+    var headerSpan = $("#UlMessageNotificationsHeaderspan");
+    parent.html("");
+    $.ajax({
+        type: "Post",
+        url: "/Admin/Message/GetMessageNotifications"
+    }).done(function (res) {
+        var model = [];
+        model = JSON.parse(res);
+        debugger;
+        model.forEach(x => {
+            var li = ` <li>
+                                    <a href="/Admin/Message/Detail/${x.Id}">
+                                        <div class="pull-right">
+                                            <img src="${x.UserAvatar}" class="img-circle" alt="${x.FullName}">
+                                        </div>
+                                        <h4>
+                                            ${x.FullName}
+                                            <small><i class="fa fa-clock-o"></i>${x.CreationDate}</small>
+                                        </h4>
+                                        <p>${x.Message}</p>
+                                    </a>
+                                </li>`;
+            parent.append(li);
+        });
+        header.text(`${model.length} پیام خوانده نشده`)
+        headerSpan.text(model.length);
+    });
+}
+function GetAdminNotifess() {
+    var parent = $("#UlNotifications");
+    var header = $("#UlNotificationsHeader");
+    var headerSpan = $("#UlNotificationsHeaderspan");
+    parent.html("");
+    $.ajax({
+        type: "Post",
+        url: "/Admin/Home/GetNotification"
+    }).done(function (res) {
+        var model = [];
+        model = JSON.parse(res);
+        debugger;
+        model.forEach(x => {
+            var li = `  <li>
+                                    <a href="${x.Url}">
+                                        <i class="${x.Icon} text-danger"></i> ${x.Title}
+                                    </a>
+                                </li>`;
+            parent.append(li);
+        });
+        header.text(`${model.length} اعلان جدید`)
+        headerSpan.text(model.length);
+    });
 }

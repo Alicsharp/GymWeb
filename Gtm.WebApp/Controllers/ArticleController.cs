@@ -37,12 +37,6 @@ namespace Gtm.WebApp.Controllers
 
             return View(model.Value);
         }
-    }
-}        //[Route("/GetBestBlogs")]
-        //public async Task<JsonResult> GetBestBlogs()
-        //{
-        //    //var model = await _mediator.Send(new GetBestBlogsForMagIndexQuery());
-        //    var json = JsonConvert.SerializeObject(model.Value);
-        //    return Json(json);
 
-        //}
+    }
+}       

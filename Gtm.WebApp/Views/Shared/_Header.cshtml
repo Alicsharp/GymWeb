@@ -1,149 +1,144 @@
 ﻿@using Utility.Appliation.Auth
- @inject IAuthService _auth;
-<header class="main-header default">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-2 col-md-3 col-sm-4 col-5">
+@inject  IAuthService _auth;
 
-                @await Component.InvokeAsync("LogoHeader")
+header class="main-header default">
+<div class="container">
+    <div class="row">
+        <div class="col-lg-2 col-md-3 col-sm-4 col-5">
+            @await Component.InvokeAsync("LogoHeader")
+        </div>
+        <div class="col-lg-6 col-md-5 col-sm-8 col-7 d-flex align-items-center">
+            <div class="search-area default w-75">
+                <form action="/Shop" class="search">
+                    <input type="text" name="filter" id="gsearchsimple" onkeyup="SearchAjax()"
+                           placeholder="نام کالا، برند و یا دسته مورد نظر خود را جستجو کنید…">
+                    <ul class="list-group search-box-list" id="ul-parent-serach">
+                        @* <li class="list-group-item contsearch">
+                                <img class="image-loader-search" src="/Images/icegif-1262.gif" />
+                            </li> *@
 
+                    </ul>
+                    <div class="localSearchSimple"></div>
+                    <button type="submit"><img src="/Assets/img/search.png" alt=""></button>
+                </form>
             </div>
-            <div class="col-lg-6 col-md-5 col-sm-8 col-7 d-flex align-items-center">
-                <div class="search-area default w-75">
-                    <form action="" class="search">
-                        <input type="text" id="gsearchsimple"
-                               placeholder="نام کالا، برند و یا دسته مورد نظر خود را جستجو کنید…">
-                        <ul class="list-group search-box-list">
-                            <li class="list-group-item contsearch">
-                                <a href="#" class="gsearch">
-                                    <i class="fad fa-search"></i>
-                                    گوشی موبایل
-                                </a>
-                            </li>
-                            <li class="list-group-item contsearch">
-                                <a href="#" class="gsearch">
-                                    <i class="fad fa-search"></i>
-                                    لپ تاپ
-                                </a>
-                            </li>
-                            <li class="list-group-item contsearch">
-                                <a href="#" class="gsearch">
-                                    <i class="fad fa-search"></i>
-                                    کفش
-                                </a>
-                            </li>
-                            <li class="list-group-item contsearch">
-                                <a href="#" class="gsearch">
-                                    <i class="fad fa-search"></i>
-                                    مانتو
-                                </a>
-                            </li>
-                            <li class="list-group-item contsearch">
-                                <a href="#" class="gsearch">
-                                    <i class="fad fa-search"></i>
-                                    لباس ورزشی
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="localSearchSimple"></div>
-                        <button type="submit"><img src="/Assets/img/search.png" alt=""></button>
-                    </form>
-                </div>
-                <div class="w-25 px-2">
-                    <a class="btn btn-info" asp-area="UserPanel" asp-controller="Seller" asp-action="Index">
-                        ثبت فروشگاه
+            <div class="w-25 px-2">
+                <a class="btn btn-info" asp-area="UserPanel" asp-controller="Seller" asp-action="Index">
+                    ثبت فروشگاه
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <div class="user-login dropdown">
+                @if (_auth.IsUserLogin())
+                {
+                    <a href="#" class="btn btn-neutral dropdown-toggle" data-toggle="dropdown"
+                       id="navbarDropdownMenuLink1">
+                        داشبرد
                     </a>
-                </div>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink1">
+                        <div class="dropdown-item">
+                            <a class="btn btn-info" asp-area="UserPanel" asp-controller="Home" asp-action="Index">پنل کاربری</a>
+                        </div>
+                        <div class="dropdown-item font-weight-bold">
+                            <span>کاربر جدید هستید؟</span> <a class="register" href="#">ثبت‌نام</a>
+                        </div>
+                        <hr>
+                        <div class="dropdown-item">
+                            <a href="#" class="dropdown-item-link">
+                                <i class="now-ui-icons users_single-02"></i>
+                                پروفایل
+                            </a>
+                        </div>
+                        <div class="dropdown-item">
+                            <a asp-area="" asp-controller="Auth" asp-action="Logout" class="dropdown-item-link">
+                                <i class="now-ui-icons shopping_bag-16"></i>
+                                خروج از سایت
+                            </a>
+                        </div>
+                    </ul>
+                }
+                else
+                {
+                    <a href="#" class="btn btn-neutral dropdown-toggle" data-toggle="dropdown"
+                       id="navbarDropdownMenuLink1">
+                        ورود
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink1">
+                        <div class="dropdown-item">
+                            <a class="btn btn-info" asp-area="" asp-controller="Auth" asp-action="Login">ورود به سایت</a>
+                        </div>
+                        <hr>
+                        <div class="dropdown-item">
+                            <a href="#" class="dropdown-item-link">
+                                <i class="now-ui-icons users_single-02"></i>
+                                پروفایل
+                            </a>
+                        </div>
+                        <div class="dropdown-item">
+                            <a href="#" class="dropdown-item-link">
+                                <i class="now-ui-icons shopping_bag-16"></i>
+                                پیگیری سفارش
+                            </a>
+                        </div>
+                    </ul>
+                }
+
+
             </div>
-            <div class="col-md-4 col-sm-12">
-                <div class="user-login dropdown">
+            <div class="cart dropdown">
+                @if (_auth.IsUserLogin())
+                {
+                    <a href="#" class="btn dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink1">
+                        <img src="/Assets/img/shopping-cart.png" alt="">
+                        <span class="count-cart" id="cartBasketCount">0</span>
+                    </a>
+                }
+                else
+                {
+                    <a href="#" class="btn dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink1">
+                        <img src="/Assets/img/shopping-cart.png" alt="">
+                        <span class="count-cart" id="cartBasketCount">0</span>
+                    </a>
+                }
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink1">
+                    <div class="basket-header">
+                        <div id="basketTotalCart" class="basket-total d-none">
+                            <span>مبلغ کل خرید:</span>
+                            <span id="priceSumCart"> </span>
+                            <span> تومان</span>
+                        </div>
+                        <a href="/Shop" class="basket-link">
+                            <span>مشاهده فروشگاه</span>
+                        </a>
+                    </div>
+                    <ul class="basket-list" id="ParentCartProducts">
+                    </ul>
                     @if (_auth.IsUserLogin())
                     {
-                        <a href="#" class="btn btn-neutral dropdown-toggle" data-toggle="dropdown"
-                           id="navbarDropdownMenuLink1">
-                            داشبرد کاربر
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink1">
-                            <div class="dropdown-item">
-                                <a class="btn btn-info" asp-area="UserPanel" asp-controller="Home" asp-action="Index">پنل کاربری</a>
-                            </div>
-                            <div class="dropdown-item font-weight-bold">
-                                <span>کاربر جدید هستید؟</span> <a class="register" href="#">ثبت‌نام</a>
-                            </div>
-                            <hr>
-                            <div class="dropdown-item">
-                                <a href="#" class="dropdown-item-link">
-                                    <i class="now-ui-icons users_single-02"></i>
-                                    پروفایل
-                                </a>
-                            </div>
-                            <div class="dropdown-item">
-                                <a asp-area="" asp-controller="Auth" asp-action="Logout" class="dropdown-item-link">
-                                    <i class="now-ui-icons shopping_bag-16"></i>
-                                    خروج از سایت
-                                </a>
-                            </div>
-                        </ul>
+                        <a id="linkCart" href="/Cart" class="basket-submit d-none">فاکتور </a>
                     }
                     else
                     {
-                        <a href="#" class="btn btn-neutral dropdown-toggle" data-toggle="dropdown"
-                           id="navbarDropdownMenuLink1">
-                            ورود / ثبت نام
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink1">
-                            <div class="dropdown-item">
-                                <a class="btn btn-info" asp-area="" asp-controller="Auth" asp-action="Login">ورود به سایت</a>
-                            </div>
-                            <hr>
-                            <div class="dropdown-item">
-                                <a href="#" class="dropdown-item-link">
-                                    <i class="now-ui-icons users_single-02"></i>
-                                    پروفایل
-                                </a>
-                            </div>
-                            <div class="dropdown-item">
-                                <a href="#" class="dropdown-item-link">
-                                    <i class="now-ui-icons shopping_bag-16"></i>
-                                    پیگیری سفارش
-                                </a>
-                            </div>
-                        </ul>
-                    }
-
-
-                </div>
-                <div class="cart dropdown">
-                    <a href="#" class="btn dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink1">
-                        <img src="/Assets/img/shopping-cart.png" alt="">
-                        سبد خرید
-                        <span class="count-cart" id="cartBasketCount">0</span>
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink1">
-                        <div class="basket-header">
-                            <div id="basketTotalCart" class="basket-total d-none">
-                                <span>مبلغ کل خرید:</span>
-                                <span id="priceSumCart"> </span>
-                                <span> تومان</span>
-                            </div>
-                            <a href="/Shop" class="basket-link">
-                                <span>مشاهده فروشگاه</span>
-                            </a>
-                        </div>
-                        <ul class="basket-list" id="ParentCartProducts">
-                        </ul>
                         <a id="linkCart" href="/Cart" class="basket-submit d-none">سبد خرید</a>
-                    </ul>
-                </div>
+                    }
+                </ul>
+            </div>
+            <div class="cart" style="float: right; width: 30%;margin-top: -6px;">
+                <a href="/Home/WishList" class="btn btnWish">
+                    <i class="fad fa-heart"></i>
+                    <span class="count-cart" id="count-wish">0</span>
+                </a>
             </div>
         </div>
     </div>
-    <nav class="main-menu">
-        <div class="container">
-            @await Component.InvokeAsync("MenuIndex")
+</div>
+<nav class="main-menu">
+    <div class="container">
+        @await Component.InvokeAsync("MenuIndex")
 
-        </div>
-    </nav>
+    </div>
+</nav>
 </header>
 
 <div class="overlay-search-box"></div>

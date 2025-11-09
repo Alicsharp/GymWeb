@@ -12,8 +12,6 @@ namespace Gtm.Contract.OrderContract.Query
         public int OrderId { get; set; }
         public OrderPayment OrderPayment { get; set; }
         public int OrderAddressId { get; set; }
-        public int PostId { get; set; }
-        public string? PostTitle { get; set; }
         public string? DiscountTitle { get; set; }
         public int DiscountId { get; set; }
         public int DiscountPercent { get; set; }
@@ -26,4 +24,5 @@ namespace Gtm.Contract.OrderContract.Query
         public OrderAddressForOrderUserPanelQueryModel? OrderAddress { get; set; }
         public List<OrderSellerUserPanelQueryModel> Ordersellers { get; set; }
     }
+
 }

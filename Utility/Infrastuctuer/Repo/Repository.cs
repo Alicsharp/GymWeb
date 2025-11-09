@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿ 
 namespace Utility.Infrastuctuer.Repo
 {
     using Microsoft.EntityFrameworkCore;
@@ -83,6 +78,7 @@ namespace Utility.Infrastuctuer.Repo
         public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await _dbSet.AnyAsync(predicate);
+        
         }
 
         public async Task<int> CountAsync()
@@ -113,7 +109,15 @@ namespace Utility.Infrastuctuer.Repo
 
         public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.SaveChangesAsync(cancellationToken) > 0;
+            try
+            {
+                await _context.SaveChangesAsync(cancellationToken);
+                return true; // حتی اگر هیچ تغییری نکرده باشه
+            }
+            catch
+            {
+                return false; // در صورت خطا
+            }
         }
 
         public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)

@@ -1,6 +1,7 @@
 ﻿using ErrorOr;
 using Gtm.Contract.ProductContract.Query;
 using Gtm.Domain.ShopDomain.ProductSellDomain;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,11 @@ namespace Gtm.Application.ShopApp.ProductSellApp
         Task<int> GetProductIdByProductSellIdAsync(int productSellId);
         Task<ProductSell?> GetProductSellByIdAsync(int productSellId, CancellationToken cancellationToken = default);
         Task<ProductSell> GetProductSellWithProductByIdAsync(int productSellId, CancellationToken cancellationToken);
+        
+        Task<ProductSell> GetProductSellWithProductAsync(int productSellId, CancellationToken cancellationToken = default);
+        public   Task<List<ProductSell>> GetSellsWithSellerAsync(List<int> productSellIds);
+        Task<ProductSell?> GetWithProductAsync(int productSellId, CancellationToken cancellationToken = default);
+
 
 
     }

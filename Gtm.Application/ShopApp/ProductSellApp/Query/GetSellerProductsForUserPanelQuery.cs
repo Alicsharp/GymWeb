@@ -29,8 +29,7 @@ namespace Gtm.Application.ShopApp.ProductSellApp.Query
 
         public GetSellerProductsForUserPanelQueryHandler(
             ISellerRepository sellerRepository,
-            IProductSellRepository productSellRepository,
-            IProductDiscountRepository productDiscountRepository)
+            IProductSellRepository productSellRepository,IProductDiscountRepository productDiscountRepository)
         {
             _sellerRepository = sellerRepository;
             _productSellRepository = productSellRepository;
@@ -56,7 +55,7 @@ namespace Gtm.Application.ShopApp.ProductSellApp.Query
                 model.Products = await res.Skip(model.Skip).Take(model.Take)
                     .Select(r => new ProductSellUserPanelQueryModel
                     {
-                        Active = r.IsActive,
+                        IsActive = r.IsActive,
                         Amount = r.Amount,
                         Id = r.Id,
                         Price = r.Price,

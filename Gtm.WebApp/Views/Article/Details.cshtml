@@ -2,7 +2,7 @@
 @using Utility.Domain.Enums
 @{
     // ViewData["Title"] = Model.Seo.MetaTitle;
-    Layout = "~/Views/Shared/_MagLayout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
     var SuccessCreateComment = TempData["SuccessCreateComment"] != null;
     var FaildCreateComment = TempData["FaildCreateComment"] != null;
 }
@@ -102,6 +102,8 @@
                             <p class="mt-2" style="color: #6c757d;">نشانی ایمیل شما منتشر نخواهد شد. بخش‌های موردنیاز علامت‌گذاری شده‌اند *</p>
                         </div>
                         <form id="formComment" class="comment-form row g-3" method="post" action="/Comment/Create">
+                            <input type="hidden" name="ownerId" value="@Model.Id" />
+
                             <input type="hidden" asp-for="ParentId" value="@Model.Id" />
                             <input type="hidden" name="commentFor" value="@CommentFor.مقاله" />
 

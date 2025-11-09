@@ -45,9 +45,24 @@ namespace Gtm.Domain.UserDomain.WalletAgg
         {
             return new Wallet(userId, price, WalletType.واریز, WalletWhy.توسط_ادمین, true, description);
         }
+        public static Wallet DepositForReportOrderSeller(int userId, int price, string description)
+        {
+            return new Wallet(userId, price, WalletType.واریز, WalletWhy.بازگشت_ریز_فاکتور, true, description);
+        }
         public static Wallet Withdrawall(int userId, int price, string description, WalletWhy walletWhy)
         {
             return new Wallet(userId, price, WalletType.برداشت, walletWhy, true, description);
         }
+
+        public static Wallet DepositForPaymentOrderSeller(int userId, int price, string description)
+        {
+            return new Wallet(userId, price, WalletType.واریز, WalletWhy.پرداخت_ریز_فاکتور, true, description);
+        }
+
+        public static Wallet WithdrawForReportOrderSeller(int userId, int price, string description)
+        {
+            return new Wallet(userId, price, WalletType.برداشت, WalletWhy.بازگشت_ریز_فاکتور, true, description);
+        }
     }
+
 }

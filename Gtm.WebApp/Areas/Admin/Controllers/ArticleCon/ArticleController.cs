@@ -58,19 +58,7 @@ namespace Gtm.WebApp.Areas.Admin.Controllers.ArticleCon
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            //var parents = await _mediator.Send(new GetArticleCategoriesForAddArticleQuery());
-            //ViewBag.Categories = parents.Value;
-
-            //var model = await _mediator.Send(new GetForEditArticleQuery(id));
-
-            //// بررسی کنید که آیا خطایی وجود دارد یا خیر
-            //if (model.IsError)
-            //{
-            //    // اگر مقاله یافت نشد، به لیست مقالات ریدایرکت کنید یا پیام خطا نمایش دهید
-            //    TempData["ErrorMessage"] = "مقاله مورد نظر یافت نشد.";
-            //    return RedirectToAction("Index"); // یا هر اکشن دیگری
-            //}
-            //return View(model.Value);
+         
             var article = await _mediator.Send(new GetForEditArticleQuery(id));
             var categories = await _mediator.Send(new GetArticleCategoriesForAddArticleQuery());
 

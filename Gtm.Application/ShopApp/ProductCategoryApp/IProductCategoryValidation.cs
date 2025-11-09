@@ -213,13 +213,13 @@ namespace Gtm.Application.ShopApp.ProductCategoryApp
             }
             else
             {
-                // بررسی تکراری نبودن عنوان
-                if (await _productCategoryRepository.ExistsAsync(p =>
-                    p.Title.Trim().ToLower() == command.Title.Trim().ToLower() &&
-                    p.Id != command.Id))
-                {
-                    errors.Add(Error.Validation(nameof(command.Title), "عنوان دسته‌بندی تکراری است."));
-                }
+                //// بررسی تکراری نبودن عنوان
+                //if (await _productCategoryRepository.ExistsAsync(p =>
+                //    p.Title.Trim().ToLower() == command.Title.Trim().ToLower() &&
+                //    p.Id != command.Id))
+                //{
+                //    errors.Add(Error.Validation(nameof(command.Title), "عنوان دسته‌بندی تکراری است."));
+                //}
             }
 
             // بررسی slug

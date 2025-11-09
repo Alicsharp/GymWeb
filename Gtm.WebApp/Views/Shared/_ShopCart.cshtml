@@ -26,8 +26,7 @@
                 <div class="price">
                     <div class="price-value">
                         <div class="price-value-wrapper">
-                            @if (Model.PriceAfterOff != Model.Price)
-                            {
+                            @if(Model.PriceAfterOff != Model.Price){
                                 <del class="text-danger">
                                     @Model.Price.ToString("#,0")
                                 </del>
