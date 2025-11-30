@@ -63,7 +63,7 @@ namespace Gtm.Application.ShopApp.SellerApp.Query
                 WhatsApp = seller.WhatsApp,
                 CityId = seller.CityId,
                 CityName = $"{state.Title} {city.Title}",
-                CreateDate = seller.CreateDate.ToPersainDate(),
+                CreateDate = seller.CreateDate.ToPersianDate(),
                 Email = seller.Email,
                 GoogleMapUrl = seller.GoogleMapUrl,
                 Id = request.id,
@@ -75,7 +75,7 @@ namespace Gtm.Application.ShopApp.SellerApp.Query
                 Status = seller.Status,
                 Telegram = seller.Telegram,
                 Title = seller.Title,
-                UpdateDate = seller.UpdateDate.ToPersainDate(),
+                UpdateDate = seller.UpdateDate.ToPersianDate(),
                 UserId = seller.UserId,
                 UserName = string.IsNullOrEmpty(user.FullName) ? user.Mobile : user.FullName
             };

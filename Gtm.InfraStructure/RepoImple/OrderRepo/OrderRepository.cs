@@ -120,19 +120,35 @@ namespace Gtm.InfraStructure.RepoImple.OrderRepo
             return Result.Success;
         }
 
-        public async Task<Order> GetOpenOrderForUserAsync(int userId)
+        public async Task<Order> GetOpenOrderForUserAsync(int userId, CancellationToken cancellationToken)
         {
+            // 1. تلاش برای پیدا کردن سفارش باز موجود (با توکن)
             var order =
-             await _context.Orders.Include(o => o.OrderSellers).ThenInclude(s => s.OrderItems).SingleOrDefaultAsync(s => s.UserId == userId &&
-            s.OrderStatus == OrderStatus.پرداخت_نشده);
-    
+                await _context.Orders
+                    .Include(o => o.OrderSellers)
+                    .ThenInclude(s => s.OrderItems)
+                    .SingleOrDefaultAsync(
+                        s => s.UserId == userId && s.OrderStatus == OrderStatus.پرداخت_نشده,
+                        cancellationToken); // ✅ توکن به SingleOrDefaultAsync پاس داده شد
+
             if (order == null)
             {
+                // 2. اگر پیدا نشد، یک سفارش جدید بساز و ذخیره کن
                 order = new(userId);
+
+                // فرض: متد AddAsync در BaseRepo است و نیازی به توکن ندارد (فقط در حافظه است)
                 await AddAsync(order);
-                await SaveChangesAsync();
-                return await _context.Orders.Include(o => o.OrderSellers).ThenInclude(o => o.OrderItems)
-                .SingleOrDefaultAsync(o => o.UserId == userId && o.OrderStatus == OrderStatus.پرداخت_نشده);
+
+                // 3. ذخیره در دیتابیس (با توکن)
+                await SaveChangesAsync(cancellationToken);
+
+                // 4. سفارش جدید را مجدداً از دیتابیس بخوان (با توکن)
+                return await _context.Orders
+                    .Include(o => o.OrderSellers)
+                    .ThenInclude(o => o.OrderItems)
+                    .SingleOrDefaultAsync(
+                        o => o.UserId == userId && o.OrderStatus == OrderStatus.پرداخت_نشده,
+                        cancellationToken); // ✅ توکن به SingleOrDefaultAsync پاس داده شد
             }
             else
                 return order;

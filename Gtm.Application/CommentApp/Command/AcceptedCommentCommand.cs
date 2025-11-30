@@ -21,11 +21,24 @@ namespace Gtm.Application.CommentApp.Command
         }
         public async Task<ErrorOr<Success>> Handle(AcceptedCommentCommand request, CancellationToken cancellationToken)
         {
-            var comment = await _commentRepository.GetByIdAsync(request.id);
+            // 1. دریافت کامنت (با توکن)
+            // نکته: اگر آیدی در دامین long است، اینجا هم باید long باشد.
+            var comment = await _commentRepository.GetByIdAsync(request.id, cancellationToken);
+
+            // 2. گارد کلاز (بسیار حیاتی)
+            if (comment is null)
+            {
+                return Error.NotFound("Comment.NotFound", "نظر مورد نظر یافت نشد.");
+            }
+
+            // 3. اعمال تغییر وضعیت
             comment.Approve();
-            var saved= await _commentRepository.SaveChangesAsync();
+
+            // 4. ذخیره
+            var saved = await _commentRepository.SaveChangesAsync(cancellationToken);
+
             if (!saved)
-                return Error.Failure("NotSaved", "ذخیره سازی به مشکل خورد");
+                return Error.Failure("Database.SaveError", "ذخیره سازی وضعیت کامنت با مشکل مواجه شد");
 
             return Result.Success;
         }

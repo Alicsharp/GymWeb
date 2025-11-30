@@ -38,7 +38,7 @@ namespace Gtm.Application.OrderServiceApp.Query
                     .Select(o => new OrderForUserPanelQueryModel
                     {
                         PriceAfterOff = o.PriceAfterOff,
-                        CreationDate = o.CreateDate.ToPersainDate(),
+                        CreationDate = o.CreateDate.ToPersianDate(),
                         DiscountPercent = o.DiscountPercent,
                         DiscountTitle = o.DiscountTitle,
                         Id = o.Id,
@@ -47,7 +47,7 @@ namespace Gtm.Application.OrderServiceApp.Query
                         PaymentPriceSeller = o.PaymentPriceSeller,
                         PostPrice = o.PostPrice,
                         Price = o.Price,
-                        UpdateDate = o.UpdateDate.ToPersainDate()
+                        UpdateDate = o.UpdateDate.ToPersianDate()
                     }).ToList();
             return model;
 

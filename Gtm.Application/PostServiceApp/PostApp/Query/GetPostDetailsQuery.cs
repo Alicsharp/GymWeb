@@ -60,7 +60,7 @@ namespace Gtm.Application.PostServiceApp.PostApp.Query
             {
                 Active = post.Active,
                 CityPricePlus = post.CityPricePlus,
-                CreationDate = post.CreateDate.ToPersainDate(), // اصلاح نام متد
+                CreationDate = post.CreateDate.ToPersianDate(), // اصلاح نام متد
                 Description = post.Description,
                 Id = post.Id,
                 InsideCity = post.InsideCity,

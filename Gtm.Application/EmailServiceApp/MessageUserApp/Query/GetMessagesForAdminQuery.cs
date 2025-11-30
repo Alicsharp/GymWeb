@@ -68,7 +68,7 @@ namespace Gtm.Application.EmailServiceApp.MessageUserApp.Query
                 var messageModels = messages
                     .Select(m => new MessageUserAdminQueryModel
                     {
-                        CreationDate = m.CreateDate.ToPersainDate(),
+                        CreationDate = m.CreateDate.ToPersianDate(),
                         Email = m.Email,
                         FullName = m.FullName,
                         Id = m.Id,

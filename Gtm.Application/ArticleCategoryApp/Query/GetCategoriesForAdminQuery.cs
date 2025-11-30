@@ -26,65 +26,64 @@ namespace Gtm.Application.ArticleCategoryApp.Query
 
         public async Task<ErrorOr<ArticleCategoryAdminPageQueryModel>> Handle(GetCategoriesForAdminQuery request, CancellationToken cancellationToken)
         {
-            var validationResult = await _articleCategoryValidator.ValidateIdAsync(request.id);
-            if (validationResult.IsError)
-            {
-                return validationResult.Errors;
-            }
-             
+            string pageTitle = "لیست سر دسته‌های مقاله";
+
+            // 1. تعیین کوئری پایه
+            // اگر id > 0 باشد یعنی زیردسته می‌خواهیم، اگر 0 باشد یعنی ریشه
+            var query = _articleCategoryRepo.QueryBy(c => true).AsNoTracking();
+
             if (request.id > 0)
             {
-                var subCategories = await _articleCategoryRepo.QueryBy(c => c.ParentId == request.id)
-                    .AsNoTracking()
-                    .Select(c => new ArticleCategoryAdminQueryModel
-                    {
-                        Active = c.IsActive,
-                        CreationDate = c.CreateDate.ToPersainDate(),
-                        Id = c.Id,
-                        
-                        ImageName = $"/Images/ArticleCategory/100/{c.ImageName}", 
-                        Title = c.Title ?? string.Empty,
-                        UpdateDate = c.UpdateDate.ToPersainDate()
-                    })
-                    .ToListAsync();
+                // اعتبارسنجی فقط برای آیدی‌های مثبت
+                var validationResult = await _articleCategoryValidator.ValidateIdAsync(request.id);
+                if (validationResult.IsError) return validationResult.Errors;
 
-                var parentCategory = await _articleCategoryRepo.GetByIdAsync(request.id);
+                // چک کردن وجود والد
+                var parentCategory = await _articleCategoryRepo.GetByIdAsync(request.id, cancellationToken);
                 if (parentCategory is null)
-                    return Error.NotFound("Category.Parent.NotFound", "دسته‌بندی والد یافت نشد.");
-
-                return new ArticleCategoryAdminPageQueryModel
                 {
-                    Id = request.id,
-                    articleCategories = subCategories,
-                    PageTitle = $"لیست زیر دسته‌های {parentCategory.Title}"
-                };
+                    return Error.NotFound("Category.Parent.NotFound", "دسته‌بندی والد یافت نشد.");
+                }
+
+                pageTitle = $"لیست زیر دسته‌های {parentCategory.Title}";
+
+                // فیلتر روی والد
+                query = query.Where(c => c.ParentId == request.id);
             }
             else
             {
-                var categories = await _articleCategoryRepo.QueryBy(c => c.ParentId == null)
-                    .AsNoTracking()
-                    .Select(c => new ArticleCategoryAdminQueryModel
-                    {
-                        Active = c.IsActive,
-                        CreationDate = c.CreateDate.ToPersainDate(),
-                        Id = c.Id,
-                        //ImageName = c.ImageName,
-                        ImageName = $"/Images/ArticleCategory/100/{c.ImageName}",
-                        Title = c.Title ?? string.Empty,
-                        UpdateDate = c.UpdateDate.ToPersainDate()
-                    })
-                    .ToListAsync();
-
-                return new ArticleCategoryAdminPageQueryModel
-                {
-                    Id = 0,
-                    articleCategories = categories,
-                    PageTitle = "لیست سر دسته‌های مقاله"
-                };
-
+                // فیلتر روی ریشه‌ها
+                query = query.Where(c => c.ParentId == null);
             }
 
+            // 2. دریافت داده‌های خام (بدون توابع C# مثل تاریخ شمسی)
+            var rawCategories = await query.Select(c => new
+            {
+                c.Id,
+                c.Title,
+                c.IsActive,
+                c.CreateDate,
+                c.UpdateDate,
+                c.ImageName
+            }).ToListAsync(cancellationToken); // ✅ توکن
 
+            // 3. مپ کردن نهایی در حافظه (In-Memory)
+            var viewModels = rawCategories.Select(c => new ArticleCategoryAdminQueryModel
+            {
+                Id = c.Id,
+                Title = c.Title ?? string.Empty,
+                Active = c.IsActive,
+                ImageName = FileDirectories.ArticleCategoryImageDirectory100 + c.ImageName, // استفاده از ثابت
+                CreationDate = c.CreateDate.ToPersianDate(), // ✅ اینجا امن است
+                UpdateDate = c.UpdateDate.ToPersianDate()
+            }).ToList();
+
+            return new ArticleCategoryAdminPageQueryModel
+            {
+                Id = request.id,
+                PageTitle = pageTitle,
+                articleCategories = viewModels
+            };
         }
     }
 }

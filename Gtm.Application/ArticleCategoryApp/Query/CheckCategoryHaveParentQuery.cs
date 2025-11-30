@@ -23,22 +23,28 @@ namespace Gtm.Application.ArticleCategoryApp.Query
 
         public async Task<ErrorOr<Success>> Handle(CheckCategoryHaveParentQuery request, CancellationToken cancellationToken)
         {
+            // 1. اعتبارسنجی ورودی
             var validationResult = await _articleCategoryValidator.ValidateIdAsync(request.Id);
             if (validationResult.IsError)
             {
                 return validationResult.Errors;
             }
 
-            var entity = await _articleCategoryRepo.GetByIdAsync(request.Id);
-            if (entity == null)
+            // 2. دریافت از دیتابیس (با توکن)
+            var entity = await _articleCategoryRepo.GetByIdAsync(request.Id, cancellationToken);
+
+            // 3. بررسی وجود
+            if (entity is null)
             {
                 return Error.NotFound("Category.NotFound", "دسته‌بندی با این شناسه پیدا نشد.");
             }
 
-            // اگر دسته‌بندی خودش فرزند است، خطا بده
+            // 4. بررسی قوانین تجاری (بیزینس رول)
+            // اگر ParentId نال نباشد، یعنی این خودش یک فرزند است و نمی‌تواند والدِ کس دیگری شود
             if (entity.ParentId != null)
             {
-                return Error.Failure("HaveParent", "شناسه داده‌شده خودش فرزند است و والد ندارد.");
+                // پیام خطا را کمی شفاف‌تر کردم
+                return Error.Failure("Category.IsChild", "دسته‌بندی انتخاب شده خود یک زیردسته است و نمی‌تواند زیرمجموعه داشته باشد.");
             }
 
             return Result.Success;

@@ -33,7 +33,7 @@ namespace Gtm.Application.StoresServiceApp.StroreApp.Query
             if (store == null || store.UserId != request.userId) return Error.Failure();
             StoreDetailForSellerPanelQueryModel model = new StoreDetailForSellerPanelQueryModel()
             {
-                CreationDate = store.CreateDate.ToPersainDate(),
+                CreationDate = store.CreateDate.ToPersianDate(),
                 Description = store.Description,
                 Id = request.id,
                 SellerId = store.Id,

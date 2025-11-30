@@ -2,7 +2,7 @@
 @model  SeoUiQueryModel
  
   <meta name="og:title" content="@Model.MetaTitle" />
-@ورهif (!string.IsNullOrEmpty(Model.MetaDescription))
+@if (!string.IsNullOrEmpty(Model.MetaDescription))
 {
     <meta content="@Model.MetaDescription" name="description" />
 }

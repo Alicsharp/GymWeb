@@ -86,7 +86,7 @@ namespace Gtm.Application.OrderServiceApp.Query
                 PaymentPriceSeller = order.PaymentPriceSeller,
                 PostPrice = order.PostPrice,
                 Price = order.Price,
-                UpdateDate = order.UpdateDate.ToPersainDate()
+                UpdateDate = order.UpdateDate.ToPersianDate()
             };
             var address = await _orderRepository.GetOrderAddressByIdAsync(order.OrderAddressId);
             var city = await _cityRepository.GetCityWithStateAsync(c => c.Id == address.CityId && c.StateId == address.StateId);

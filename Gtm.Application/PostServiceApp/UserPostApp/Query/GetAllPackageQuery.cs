@@ -41,8 +41,8 @@ namespace Gtm.Application.PostServiceApp.UserPostApp.Query
                         p.Title,
                         p.Count,
                         p.Price,
-                        p.CreateDate.ToPersainDate(),
-                        p.UpdateDate != null ? p.UpdateDate.ToPersainDate() : null,
+                        p.CreateDate.ToPersianDate(),
+                        p.UpdateDate != null ? p.UpdateDate.ToPersianDate() : null,
                         p.IsActive,
                         $"{FileDirectories.PackageImageDirectory100}{p.ImageName}" // Corrected this line
                     ))

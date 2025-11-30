@@ -16,7 +16,7 @@ namespace Utility.Appliation
         {
             try
             {
-                if (date != null) return date.Value.ToPersainDate();
+                if (date != null) return date.Value.ToPersianDate();
             }
             catch (Exception)
             {
@@ -26,7 +26,7 @@ namespace Utility.Appliation
             return "";
         }
 
-        public static string ToPersainDate(this DateTime date)
+        public static string ToPersianDate(this DateTime date)
         {
             if (date == new DateTime()) return "";
             var pc = new PersianCalendar();

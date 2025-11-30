@@ -29,7 +29,7 @@ namespace Gtm.Application.SiteServiceApp.BannerApp.Query
                     .Select(b => new BanerForAdminQueryModel
                     {
                         Active = b.Active,
-                        CreationDate = b.CreateDate.ToPersainDate(),
+                        CreationDate = b.CreateDate.ToPersianDate(),
                         Id = b.Id,
                         ImageName = $"{FileDirectories.BanerImageDirectory100}{b.ImageName}",
                         State = b.State,

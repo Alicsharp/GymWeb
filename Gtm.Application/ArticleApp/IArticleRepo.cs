@@ -14,8 +14,8 @@ namespace Gtm.Application.ArticleApp
      Task<int> DeleteByCategoryIdAsync(int categoryId, CancellationToken cancellationToken = default);
  
      Task<UpdateArticleDto> GetArticleForEditById(int ArticleId);
-     Task<Article> GetBySlugAsync(string slug);
-      Task<int> GetTotalVisitCountAsync(CancellationToken cancellationToken = default);
+        Task<Article?> GetBySlugAsync(string slug, CancellationToken cancellationToken = default);
+        Task<int> GetTotalVisitCountAsync(CancellationToken cancellationToken = default);
 
     }
 }

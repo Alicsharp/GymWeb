@@ -31,7 +31,7 @@ namespace Gtm.Application.SiteServiceApp.SliderApp.Query
                     {
                         Active = s.Active,
                         ImageAlt = s.ImageAlt,
-                        CreationDate = s.CreateDate.ToPersainDate(), // Fixed typo in method name
+                        CreationDate = s.CreateDate.ToPersianDate(), // Fixed typo in method name
                         Id = s.Id,
                         ImageName = Path.Combine(FileDirectories.SliderImageDirectory100, s.ImageName)
                     })

@@ -37,7 +37,7 @@ namespace Gtm.Application.UserApp.Query
                 user.UserGender,
                 0,
                 0,
-                user.CreateDate.ToPersainDate());
+                user.CreateDate.ToPersianDate());
         }
 
        

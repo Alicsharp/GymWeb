@@ -38,7 +38,7 @@ namespace Gtm.InfraStructure.RepoImple.SellerRepo
                 WhatsApp = s.WhatsApp,
                 CityId = s.CityId,
                 CityName = "",
-                CreateDate = s.CreateDate.ToPersainDate(),
+                CreateDate = s.CreateDate.ToPersianDate(),
                 Email = s.Email,
                 GoogleMapUrl = s.GoogleMapUrl,
                 Id = id,
@@ -50,7 +50,7 @@ namespace Gtm.InfraStructure.RepoImple.SellerRepo
                 Status = s.Status,
                 Telegram = s.Telegram,
                 Title = s.Title,
-                UpdateDate = s.UpdateDate.ToPersainDate(),
+                UpdateDate = s.UpdateDate.ToPersianDate(),
                 UserId = s.UserId,
                 UserName = ""
             };
@@ -74,14 +74,14 @@ namespace Gtm.InfraStructure.RepoImple.SellerRepo
                 ImageAccept = s.ImageAccept,
                 CityId = s.CityId,
                 CityName = "",
-                CreateDate = s.CreateDate.ToPersainDate(),
+                CreateDate = s.CreateDate.ToPersianDate(),
                 Email = s.Email,
                 Id = s.Id,
                 ImageName = s.ImageName,
                 Phone1 = s.Phone1,
                 StateId = s.StateId,
                 Title = s.Title,
-                UpdateDate = s.UpdateDate.ToPersainDate(),
+                UpdateDate = s.UpdateDate.ToPersianDate(),
                 UserId = s.UserId,
                 UserName = ""
             }).ToList();

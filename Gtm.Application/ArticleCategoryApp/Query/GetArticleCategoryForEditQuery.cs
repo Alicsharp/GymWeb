@@ -23,25 +23,34 @@ namespace Gtm.Application.ArticleCategoryApp.Query
 
         public async Task<ErrorOr<UpdateArticleCategoryDto>> Handle(GetArticleCategoryForEditQuery request, CancellationToken cancellationToken)
         {
-            var validationResult= await _articleCategoryValidator.ValidateIdAsync(request.Id);
-            if(validationResult.IsError) 
+            // 1. اعتبارسنجی
+            var validationResult = await _articleCategoryValidator.ValidateIdAsync(request.Id);
+            if (validationResult.IsError)
             {
                 return validationResult.Errors;
             }
-            var entity = await _articleCategoryRepo.GetByIdAsync(request.Id);
-            if(entity == null) 
+
+            // 2. دریافت از دیتابیس (با توکن)
+            var entity = await _articleCategoryRepo.GetByIdAsync(request.Id, cancellationToken);
+
+            // 3. بررسی وجود
+            if (entity is null)
             {
-                return Error.Failure("ArticleCategoryNotFound", "کتگوری مورد نظر یافت نشد");
+                return Error.NotFound("ArticleCategory.NotFound", "دسته بندی مورد نظر یافت نشد");
             }
-            return new UpdateArticleCategoryDto()
+
+            // 4. مپ کردن (Mapping)
+            return new UpdateArticleCategoryDto
             {
-                ImageAlt = entity.ImageAlt,
                 Id = entity.Id,
-                ImageFile = null,
-                ImageName = entity.ImageName,
-                Parent = entity.ParentId.Value,
+                Title = entity.Title,
                 Slug = entity.Slug,
-                Title = entity.Title
+                ImageName = entity.ImageName,
+                ImageAlt = entity.ImageAlt,
+                ImageFile = null, // در حالت ویرایش فایل جدید نال است
+
+                // ✅ اصلاح باگ: جلوگیری از کرش اگر ParentId نال باشد
+                Parent = entity.ParentId ?? 0
             };
         }
     }

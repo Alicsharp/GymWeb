@@ -22,19 +22,34 @@ namespace Gtm.Application.ArticleApp.Command
 
         public async Task<ErrorOr<Success>> Handle(ChangeArticleActivationCommand request, CancellationToken cancellationToken)
         {
-             var validationResults= await _articleValidator.ValidateIdAsync(request.Id);
-             if(validationResults.IsError)
-             {
-                 return validationResults.Errors;
-             }
-            var entity=await _articleRepo.GetByIdAsync(request.Id);
-            entity.ActivationChange();
-           var saved= await _articleRepo.SaveChangesAsync(cancellationToken);
-            if(!saved)
+            // 1. اعتبارسنجی اولیه (آیا عدد مثبت است؟)
+            var validationResults = await _articleValidator.ValidateIdAsync(request.Id);
+            if (validationResults.IsError)
             {
-                return Error.Failure("NotSavaed", "عملیات شکست خورد");
+                return validationResults.Errors;
             }
+
+            // 2. دریافت از دیتابیس
+            var entity = await _articleRepo.GetByIdAsync(request.Id);
+
+            // 3. 🚨 گارد کلاز حیاتی: آیا اصلا پیدا شد؟
+            if (entity == null)
+            {
+                return Error.NotFound("Article.NotFound", "مقاله‌ای با این شناسه یافت نشد");
+            }
+
+            // 4. تغییر وضعیت
+            entity.ActivationChange();
+
+            // 5. ذخیره
+            var saved = await _articleRepo.SaveChangesAsync(cancellationToken);
+            if (!saved)
+            {
+                return Error.Failure("NotSaved", "عملیات شکست خورد");
+            }
+
             return Result.Success;
         }
     }
+
 }

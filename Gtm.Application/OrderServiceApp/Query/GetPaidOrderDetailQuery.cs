@@ -93,7 +93,7 @@ namespace Gtm.Application.OrderServiceApp.Query
                 PaymentPriceSeller = order.PaymentPriceSeller,
                 PostPrice = order.PostPrice,
                 Price = order.Price,
-                UpdateDate = order.UpdateDate.ToPersainDate()
+                UpdateDate = order.UpdateDate.ToPersianDate()
             };
 
             // 4. واکشی آدرس (N+1) (حفظ ساختار اصلی اما به صورت async)

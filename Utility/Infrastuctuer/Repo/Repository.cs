@@ -21,9 +21,12 @@ namespace Utility.Infrastuctuer.Repo
             _dbSet = _context.Set<TEntity>();
         }
 
-        public async Task<TEntity> GetByIdAsync(TKey id)
+        public async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
         {
-            return await _dbSet.FindAsync(id);
+            // 2. توکن را به عنوان آرگومان دوم به FindAsync پاس بده
+            // نکته: ورودی اول FindAsync آرایه‌ای از آبجکت‌هاست (برای کلیدهای ترکیبی)، 
+            // پس id را داخل آبجکت می‌گذاریم تا کامپایلر گیج نشود.
+            return await _dbSet.FindAsync(new object[] { id }, cancellationToken);
         }
 
         public async Task<IEnumerable<TEntity>> GetAllAsync()
@@ -65,20 +68,26 @@ namespace Utility.Infrastuctuer.Repo
         {
             _dbSet.RemoveRange(entities);
         }
-
-        public async Task<bool> RemoveByIdAsync(TKey id)
+        public async Task<bool> RemoveByIdAsync(TKey id, CancellationToken cancellationToken = default)
         {
-            var entity = await GetByIdAsync(id);
-            if (entity == null) return false;
+            // 1. جستجو با توکن (اگر کنسل شود، همینجا متوقف می‌شود)
+            var entity = await _dbSet.FindAsync(new object[] { id }, cancellationToken);
 
-            Remove(entity);
+            if (entity == null)
+                return false;
+
+            // 2. حذف (در حافظه)
+            _dbSet.Remove(entity);
+
+            // نکته: اگر متد شما SaveChanges را هم صدا می‌زند، توکن را به آن هم پاس دهید.
+            // اما طبق کدهای قبلی شما، ظاهراً SaveChanges یا Commit جداگانه صدا زده می‌شود.
+
             return true;
         }
-
-        public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
-            return await _dbSet.AnyAsync(predicate);
-        
+            // توکن را به متد AnyAsync پاس بدهید
+            return await _dbSet.AnyAsync(predicate, cancellationToken);
         }
 
         public async Task<int> CountAsync()

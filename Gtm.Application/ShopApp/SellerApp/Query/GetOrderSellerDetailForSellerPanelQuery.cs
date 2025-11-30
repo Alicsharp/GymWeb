@@ -64,8 +64,8 @@ namespace Gtm.Application.ShopApp.SellerApp.Query
                 SellerId = orderSeller.SellerId,
                 Status = orderSeller.Status,
                 OrderAddress = null,
-                CreationDate = orderSeller.Order.CreateDate.ToPersainDate(),
-                UpdateDate = orderSeller.Order.UpdateDate.ToPersainDate()
+                CreationDate = orderSeller.Order.CreateDate.ToPersianDate(),
+                UpdateDate = orderSeller.Order.UpdateDate.ToPersianDate()
             };
 
             // 4️⃣ آدرس سفارش

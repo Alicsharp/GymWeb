@@ -56,7 +56,7 @@ namespace Gtm.Application.PostServiceApp.UserPostApp.Query
                 return new PostOrderUserPanelQueryModel
                 {
                     Count = package?.Count ?? 0,
-                    Date = o.CreateDate.ToPersainDate(),
+                    Date = o.CreateDate.ToPersianDate(),
                     Id = o.Id,
                     PackageId = o.PackageId,
                     PackageImage = package != null ? $"{FileDirectories.PackageImageDirectory400}{package.ImageName}" : "",

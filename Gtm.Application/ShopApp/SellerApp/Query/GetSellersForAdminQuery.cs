@@ -62,14 +62,14 @@ namespace Gtm.Application.ShopApp.SellerApp.Query
                     {
                         CityId = s.CityId,
                         CityName = "",
-                        CreateDate = s.CreateDate.ToPersainDate(),
+                        CreateDate = s.CreateDate.ToPersianDate(),
                         Email = s.Email,
                         Id = s.Id,
                         ImageName = s.ImageName,
                         Phone1 = s.Phone1,
                         StateId = s.StateId,
                         Title = s.Title,
-                        UpdateDate = s.UpdateDate.ToPersainDate(),
+                        UpdateDate = s.UpdateDate.ToPersianDate(),
                         UserId = s.UserId,
                         UserName = ""
                     })

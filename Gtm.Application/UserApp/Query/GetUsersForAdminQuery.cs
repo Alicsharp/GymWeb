@@ -71,7 +71,7 @@ namespace Gtm.Application.UserApp.Query
                     {
                         Active = u.Active,
                         WalletAmount = 0,
-                        Creationdate = u.CreateDate.ToPersainDate(),
+                        Creationdate = u.CreateDate.ToPersianDate(),
                         Delete = u.IsDelete,
                         Email = u.Email,
                         FullName = u.FullName,

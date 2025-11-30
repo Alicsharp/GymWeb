@@ -17,7 +17,7 @@ namespace Gtm.Application.OrderServiceApp
 {
     public interface IOrderRepository:IRepository<Order,int>
     {
-        Task<Order> GetOpenOrderForUserAsync(int userId);
+         Task<Order> GetOpenOrderForUserAsync(int userId, CancellationToken cancellationToken);
         Task<int> CalculateOrderSellerWeightAsync(int orderSellerId);
         //Task<OrderUserPanelQueryModel> GetOpenOrderForUserAsync(int userId);
         Task<int> CalculateOrderSellerWeight(int orderSellerId);

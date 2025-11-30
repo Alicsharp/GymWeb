@@ -63,7 +63,7 @@ namespace Gtm.Application.OrderServiceApp.Query
                 Price = o.Price,
                 SellerId = o.SellerId,
                 Status = o.Status,
-                UpdateDate = o.Order.UpdateDate.ToPersainDate(),
+                UpdateDate = o.Order.UpdateDate.ToPersianDate(),
                 SellerName = "" // (در حلقه N+1 پر می‌شود)
             }).ToList();
 

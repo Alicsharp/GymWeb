@@ -37,7 +37,7 @@ namespace Gtm.Application.AdminDashbord.Query
             // 2. مپ کردن اولیه (در حافظه)
             List<LastOrderAdminQueryModel> model = lastOrders.Select(o => new LastOrderAdminQueryModel
             {
-                CreationDate = o.CreateDate.ToPersainDate(),
+                CreationDate = o.CreateDate.ToPersianDate(),
                 OrderId = o.Id,
                 PaymentPrice = o.PaymentPrice,
                 Status = o.OrderStatus,

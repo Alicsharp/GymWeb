@@ -69,7 +69,7 @@ namespace Gtm.Application.EmailServiceApp.EmailUserApp.Query
                         .Take(model.Take)
                         .Select(e => new EmailUserAdminQueryModel
                         {
-                            CreationDate = e.CreateDate.ToPersainDate(),
+                            CreationDate = e.CreateDate.ToPersianDate(),
                             Email = e.Email,
                             Id = e.Id,
                             UserId = e.UserId,

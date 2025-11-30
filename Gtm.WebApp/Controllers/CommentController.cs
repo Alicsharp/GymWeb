@@ -75,7 +75,7 @@ namespace Gtm.WebApp.Controllers
     //        Text = c.Text,
     //        UserId = c.AuthorUserId,
     //        FullName = c.FullName,
-    //        CreationDate = c.CreateDate.ToPersainDate(),
+    //        CreationDate = c.CreateDate.ToPersianDate(),
     //        Avatar = FileDirectories.UserImageDirectory100 + "default.png" // در صورت نیاز با userRepo تغییر بده
     //    }).ToList();
 

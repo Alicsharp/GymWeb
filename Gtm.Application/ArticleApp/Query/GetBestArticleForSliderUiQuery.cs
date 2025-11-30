@@ -12,8 +12,9 @@ using Utility.Appliation.FileService;
 namespace Gtm.Application.ArticleApp.Query
 {
     public record GetBestArticleForSliderUiQuery : IRequest<ErrorOr<List<BestArticleSliderQueryModel>>>;
+
     public class GetBestArticleForSliderUiQueryHandler : IRequestHandler<GetBestArticleForSliderUiQuery, ErrorOr<List<BestArticleSliderQueryModel>>>
-    { 
+    {
         private readonly IArticleRepo _articleRepo;
 
         public GetBestArticleForSliderUiQueryHandler(IArticleRepo articleRepo)
@@ -23,20 +24,26 @@ namespace Gtm.Application.ArticleApp.Query
 
         public async Task<ErrorOr<List<BestArticleSliderQueryModel>>> Handle(GetBestArticleForSliderUiQuery request, CancellationToken cancellationToken)
         {
+            // نکته: ما فرض می‌کنیم متد QueryBy خروجی IQueryable می‌دهد
+            // اگر QueryBy لیست برمی‌گرداند، کدهای OrderBy در مموری اجرا می‌شوند که برای تعداد کم اوکی است
+            // اما اگر IQueryable باشد عالی است.
             var query = _articleRepo.QueryBy(b => b.IsActive);
 
             var result = await query
-                .OrderByDescending(b => b.VisitCount)
-                .Take(10)
+                .OrderByDescending(b => b.VisitCount) // پربازدیدترین‌ها اول
+                .Take(10) // فقط ۱۰ تا
                 .Select(b => new BestArticleSliderQueryModel
                 {
                     ImageAlt = b.ImageAlt,
                     Id = b.Id,
+                    // ترکیب مسیر فایل
                     ImageName = FileDirectories.ArticleImageDirectory400 + b.ImageName,
                     Slug = b.Slug,
                     Title = b.Title,
                     VisitCount = b.VisitCount
-                }).ToListAsync();
+                })
+                // ✅ پاس دادن توکن برای کنسل شدن احتمالی
+                .ToListAsync(cancellationToken);
 
             return result;
         }

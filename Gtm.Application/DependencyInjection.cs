@@ -2,6 +2,7 @@
 using Gtm.Application.ArticleApp.Command;
 using Gtm.Application.ArticleCategoryApp;
 using Gtm.Application.CommentApp;
+using Gtm.Application.DiscountsServiceApp.OrderDiscountsServiceApp;
 using Gtm.Application.EmailServiceApp.EmailUserApp;
 using Gtm.Application.PostServiceApp.CityApp;
 using Gtm.Application.PostServiceApp.PackageApp;
@@ -76,7 +77,8 @@ namespace Gtm.Application
             services.AddScoped<IProductGalleryValidation, ProductGalleryValidationService>();
             services.AddScoped<IProductFeatureValidation, ProductFeatureValidationService>();
             services.AddScoped<IProductSellValidation, ProductSellValidation>();
-            
+            services.AddScoped<IOrderDiscountValidator, OrderDiscountValidator>();
+
 
             services.AddMediatR(options =>
             {

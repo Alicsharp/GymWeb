@@ -47,7 +47,7 @@ namespace Gtm.Application.StoresServiceApp.StroreApp.Query
             {
                 model.Stores = storeList.Select(s => new StoreUserPanelQueryModel
                 {
-                    CreationDate = s.CreateDate.ToPersainDate(),
+                    CreationDate = s.CreateDate.ToPersianDate(),
                     Id = s.Id,
                     SellerId = s.SellerId,
                     SellerName = "" // بعداً ست می‌کنیم

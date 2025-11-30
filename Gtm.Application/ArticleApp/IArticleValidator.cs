@@ -132,14 +132,17 @@ namespace Gtm.Application.ArticleApp
 
             return errors.Any() ? errors : Result.Success;
         }
-        public async Task<ErrorOr<Success>> ValidateIdAsync(int id)
+        public Task<ErrorOr<Success>> ValidateIdAsync(int id)
         {
-            var errors = new List<Error>();
-            if (id < 0 && id == null)
+            // اگر شناسه صفر یا منفی بود، غلط است
+            if (id <= 0)
             {
-                return Error.Validation("Category.Id.Invalid", "شناسه دسته‌بندی معتبر نیست.");
+                return Task.FromResult<ErrorOr<Success>>(
+                    Error.Validation("Category.Id.Invalid", "شناسه دسته‌بندی معتبر نیست.")
+                );
             }
-            return errors.Count > 0 ? errors : Result.Success;
+
+            return Task.FromResult<ErrorOr<Success>>(Result.Success);
         }
         public async Task<ErrorOr<Success>> ValidateGetBlogsForUiAsync(string slug, int pageId, string filter)
         {

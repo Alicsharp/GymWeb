@@ -12,12 +12,11 @@ namespace Gtm.Application.ArticleApp.Command
     public class DeleteArticleCommandHandler : IRequestHandler<DeleteArticleCommand, ErrorOr<Success>>
     {
         private readonly IArticleRepo _articleRepo; 
-        private readonly IArticleValidator _articleValidator;
-
+       
         public DeleteArticleCommandHandler(IArticleRepo articleRepo, IArticleValidator articleValidator)
         {
             _articleRepo = articleRepo;
-            _articleValidator = articleValidator;
+             
         }
 
         public async Task<ErrorOr<Success>> Handle(DeleteArticleCommand request, CancellationToken cancellationToken)

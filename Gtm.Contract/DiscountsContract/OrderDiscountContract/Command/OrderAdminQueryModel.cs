@@ -17,10 +17,10 @@ namespace Gtm.Contract.DiscountsContract.OrderDiscountContract.Command
             Code = code;
             Count = count;
 
-            StartDate = startDate.ToPersainDate();
-            EndDate = endDate.ToPersainDate();
+            StartDate = startDate.ToPersianDate();
+            EndDate = endDate.ToPersianDate();
             Use = use;
-            CreationDate = creationDate.ToPersainDate();
+            CreationDate = creationDate.ToPersianDate();
         }
 
         public int Id { get; private set; }

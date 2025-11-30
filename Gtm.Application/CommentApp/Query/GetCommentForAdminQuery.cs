@@ -3,6 +3,7 @@ using Gtm.Application.ArticleApp;
 using Gtm.Application.UserApp;
 using Gtm.Contract.CommentContract.Query;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,102 +29,110 @@ namespace Gtm.Application.CommentApp.Query
 
         public async Task<ErrorOr<CommentAdminPaging>> Handle(GetCommentForAdminQuery request, CancellationToken cancellationToken)
         {
-            var result = _commentRepo
+            // 1. ساخت کوئری پایه
+            var query = _commentRepo
                 .QueryBy(c =>
                     c.CommentFor == request.commentFor &&
                     c.Status == request.status &&
-                    c.TargetEntityId == request.ownerId &&
-                    c.ParentId == request.parentId)
-                .OrderByDescending(c => c.Id);
+                    (request.ownerId == 0 || c.TargetEntityId == request.ownerId) && // اصلاح شرط OwnerId
+                    (request.parentId == null || c.ParentId == request.parentId)     // اصلاح شرط ParentId
+                );
 
+            // 2. اعمال فیلتر متنی
             if (!string.IsNullOrWhiteSpace(request.filter))
             {
-                result = result
-                    .Where(c =>
-                        c.FullName.Contains(request.filter) ||
-                        c.Email.Contains(request.filter) ||
-                        c.Text.Contains(request.filter))
-                    .OrderByDescending(c => c.Id);
+                query = query.Where(c =>
+                    c.FullName.Contains(request.filter) ||
+                    c.Email.Contains(request.filter) ||
+                    c.Text.Contains(request.filter));
             }
 
+            // اعمال ترتیب
+            query = query.OrderByDescending(c => c.Id);
+
+            // 3. تنظیمات صفحه‌بندی
             CommentAdminPaging model = new();
-            model.GetData(result, request.pageId, request.take, 5);
+            // فرض: GetData تعداد کل را می‌گیرد و تنظیمات Skip/Take را انجام می‌دهد
+            model.GetData(query, request.pageId, request.take, 5);
+
+            // پر کردن متادیتای مدل
             model.Filter = request.filter;
             model.CommentFor = request.commentFor;
             model.CommentStatus = request.status;
             model.OwnerId = request.ownerId;
             model.ParentId = request.parentId;
-            model.PageTitle = $"لیست نظرات - {request.status.ToString().Replace("_", " ")} - {request.commentFor.ToString().Replace("_", " ")}";
+            model.PageTitle = $"لیست نظرات - {request.status.ToString().Replace("_", " ")}";
 
-            var pagedComments = result.Skip(model.Skip).Take(model.Take).ToList();
+            // 4. دریافت داده‌ها از دیتابیس (Async)
+            var pagedComments = await query
+                .Skip(model.Skip)
+                .Take(model.Take)
+                .ToListAsync(cancellationToken); // ✅ استفاده از توکن
 
+            // 5. مپ کردن اولیه
             model.Comments = pagedComments.Select(c => new CommentAdminQueryModel
             {
+                Id = c.Id,
                 CommentFor = c.CommentFor,
                 Email = c.Email,
                 FullName = c.FullName,
-                HaveChild = false,
-                Id = c.Id,
                 OwnerId = c.TargetEntityId,
                 ParentId = c.ParentId,
                 Status = c.Status,
                 Text = c.Text,
                 UserId = c.AuthorUserId,
                 WhyRejected = c.WhyRejected,
+                HaveChild = false, // پیش‌فرض
                 CommentTitle = "",
                 UserName = ""
             }).ToList();
 
-            // تنظیم عنوان صفحه بر اساس موجودیت مالک
-            if (model.OwnerId > 0)
+            // 6. پر کردن اطلاعات تکمیلی (Enrichment)
+
+            // الف) تنظیم عنوان کلی صفحه (اگر فیلتر روی مالک خاصی باشد)
+            if (model.OwnerId > 0 && request.commentFor == CommentFor.مقاله)
             {
-                switch (model.CommentFor)
+                var blog = await _articleRepo.GetByIdAsync(model.OwnerId, cancellationToken);
+                if (blog != null)
                 {
-                    case CommentFor.مقاله:
-                        var blog = await _articleRepo.GetByIdAsync(model.OwnerId);
-                        model.PageTitle += $"  {blog.Title}";
-                        break;
-
-                    case CommentFor.محصول:
-                        // در صورت نیاز پیاده‌سازی شود
-                        break;
-
-                    default:
-                        break;
+                    model.PageTitle += $" - مقاله: {blog.Title}";
                 }
             }
 
-            // اگر پاسخ به کامنت خاصی است
+            // ب) تنظیم عنوان کلی برای پاسخ‌ها
             if (model.ParentId is > 0)
             {
-                var parentComment = await _commentRepo.GetByIdAsync(model.ParentId.Value);
-                model.PageTitle += $"- پاسخ برای {parentComment.FullName}";
+                var parentComment = await _commentRepo.GetByIdAsync(model.ParentId.Value, cancellationToken);
+                if (parentComment != null)
+                {
+                    model.PageTitle += $" - پاسخ به: {parentComment.FullName}";
+                }
             }
 
-            // پردازش اطلاعات اضافی برای هر کامنت
+            // ج) پر کردن اطلاعات هر ردیف
             foreach (var comment in model.Comments)
             {
-                comment.HaveChild = await _commentRepo.ExistsAsync(c => c.ParentId == comment.Id);
+                // بررسی فرزند
+                comment.HaveChild = await _commentRepo.ExistsAsync(c => c.ParentId == comment.Id, cancellationToken);
 
+                // دریافت نام کاربر
                 if (comment.UserId > 0)
                 {
-                    var user = await _userRepo.GetByIdAsync(comment.UserId);
-                    comment.UserName = string.IsNullOrEmpty(user.FullName) ? user.Mobile : user.FullName;
+                    var user = await _userRepo.GetByIdAsync(comment.UserId, cancellationToken);
+                    if (user != null)
+                    {
+                        comment.UserName = string.IsNullOrEmpty(user.FullName) ? user.Mobile : user.FullName;
+                    }
                 }
 
-                switch (comment.CommentFor)
+                // دریافت عنوان آیتم هدف (مقاله/محصول)
+                if (comment.CommentFor == CommentFor.مقاله)
                 {
-                    case CommentFor.مقاله:
-                        var blog = await _articleRepo.GetByIdAsync(comment.OwnerId);
-                        comment.CommentTitle = $"نظر برای مقاله {blog.Title}";
-                        break;
-
-                    case CommentFor.محصول:
-                        // در صورت نیاز پیاده‌سازی شود
-                        break;
-
-                    default:
-                        break;
+                    var blog = await _articleRepo.GetByIdAsync(comment.OwnerId, cancellationToken);
+                    if (blog != null)
+                    {
+                        comment.CommentTitle = blog.Title;
+                    }
                 }
             }
 

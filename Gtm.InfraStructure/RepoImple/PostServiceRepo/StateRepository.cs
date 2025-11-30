@@ -61,7 +61,7 @@ namespace Gtm.InfraStructure.RepoImple.PostServiceRepo
                 {
                     Id = s.Id,
                     Title = s.Title,
-                    CreateDate = s.CreateDate.ToPersainDate(),
+                    CreateDate = s.CreateDate.ToPersianDate(),
                     CityCount = s.Cities.Count()
                 })
                 .ToListAsync();

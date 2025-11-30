@@ -38,7 +38,7 @@ namespace Gtm.Application.ShopApp.SellerApp.Query
                 WhatsApp = seller.WhatsApp,
                 ImageAlt = seller.ImageAlt,
                 CityId = seller.CityId,
-                CreationDate = seller.CreateDate.ToPersainDate(),
+                CreationDate = seller.CreateDate.ToPersianDate(),
                 Email = seller.Email,
                 GoogleMapUrl = seller.GoogleMapUrl,
                 Id = request.id,
@@ -50,7 +50,7 @@ namespace Gtm.Application.ShopApp.SellerApp.Query
                 Status = seller.Status,
                 Telegram = seller.Telegram,
                 Title = seller.Title,
-                UpdateDate = seller.UpdateDate.ToPersainDate(),
+                UpdateDate = seller.UpdateDate.ToPersianDate(),
                 CityName = ""
             };
             var state =  await _stateRepository.GetByIdAsync(seller.StateId);

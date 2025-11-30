@@ -42,13 +42,13 @@ namespace Gtm.Application.DiscountsServiceApp.OrderDiscountsServiceApp.Query
             // اعتبارسنجی 3: تاریخ شروع
             if (orderDiscount.StartDate.Date > DateTime.Now.Date)
             {
-                return Error.Validation(description: $"تاریخ شروع تخفیف {request.code} از {DateTime.Now.ToPersainDate()} است .");
+                return Error.Validation(description: $"تاریخ شروع تخفیف {request.code} از {DateTime.Now.ToPersianDate()} است .");
             }
 
             // اعتبارسنجی 4: تاریخ پایان
             if (orderDiscount.EndDate.Date < DateTime.Now.Date)
             {
-                return Error.Validation(description: $" تخفیف {request.code} در تاریخ {DateTime.Now.ToPersainDate()} به اتمام رسیده است .");
+                return Error.Validation(description: $" تخفیف {request.code} در تاریخ {DateTime.Now.ToPersianDate()} به اتمام رسیده است .");
             }
 
             // اعتبارسنجی 5: تعداد استفاده

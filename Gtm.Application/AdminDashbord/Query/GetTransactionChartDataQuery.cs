@@ -40,7 +40,7 @@ namespace Gtm.Application.AdminDashbord.Query
             DateTime endDate = maxDate ?? DateTime.Now;
 
             // 2. منطق بیزینس: ساخت لیست سال‌ها (از کد اصلی شما)
-            // (استفاده از GetYear به جای ToPersainDate().Split() برای ایمنی)
+            // (استفاده از GetYear به جای ToPersianDate().Split() برای ایمنی)
             var startYear = _persianCalendar.GetYear(startDate);
             var endYear = _persianCalendar.GetYear(endDate);
 

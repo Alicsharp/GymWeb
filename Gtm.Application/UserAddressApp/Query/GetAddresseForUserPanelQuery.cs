@@ -44,7 +44,7 @@ namespace Gtm.Application.UserAddressApp.Query
               AddressDetail = a.AddressDetail,
               CityId = a.CityId,
               CityName = "",
-              CreationDate = a.CreateDate.ToPersainDate(),
+              CreationDate = a.CreateDate.ToPersianDate(),
               FullName = a.FullName,
 
               IranCode = a.IranCode,

@@ -32,7 +32,7 @@ namespace Gtm.Application.ShopApp.ProductCategoryApp.Query
             List<ProductCategoryAdminQueryModel> productCategories = new List<ProductCategoryAdminQueryModel>();
             string title = "لیست دسته بندی های سر گروه";
             var res = _productCategoryRepository.QueryBy(c => c.Parent == request.id);
-            productCategories = res.Select(r => new ProductCategoryAdminQueryModel(r.Id, r.Title, r.ImageName, r.CreateDate.ToPersainDate(), r.UpdateDate.ToPersainDate(), r.IsActive)).ToList();
+            productCategories = res.Select(r => new ProductCategoryAdminQueryModel(r.Id, r.Title, r.ImageName, r.CreateDate.ToPersianDate(), r.UpdateDate.ToPersianDate(), r.IsActive)).ToList();
             if (request.id > 0)
             {
                 var category = await _productCategoryRepository.GetByIdAsync(request.id);

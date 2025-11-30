@@ -70,7 +70,7 @@ namespace Gtm.Application.PostServiceApp.StateApp.Query
                     {
                         Id = c.Id,
                         Title = c.Title,
-                        CreationDate = c.CreateDate.ToPersainDate()
+                        CreationDate = c.CreateDate.ToPersianDate()
                     }).ToList()
                 };
             }

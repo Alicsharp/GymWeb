@@ -10,7 +10,7 @@ namespace Utility.Appliation.RepoInterface
     public interface IRepository<TEntity, TKey> where TEntity : class
     {
         // Basic CRUD Operations
-        Task<TEntity> GetByIdAsync(TKey id);
+        Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default);
         Task<IEnumerable<TEntity>> GetAllAsync();
         IQueryable<TEntity> QueryBy(Expression<Func<TEntity, bool>> predicate);
         Task<List<TEntity>> GetAllByQueryAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
@@ -30,10 +30,10 @@ namespace Utility.Appliation.RepoInterface
         // Remove Operations
         void Remove(TEntity entity);
         void RemoveRange(IEnumerable<TEntity> entities);
-        Task<bool> RemoveByIdAsync(TKey id);
+        Task<bool> RemoveByIdAsync(TKey id, CancellationToken cancellationToken = default);
 
         // Other Operations
-        Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate);
+        Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
         Task<int> CountAsync();
         Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate);
 

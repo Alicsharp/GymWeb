@@ -31,54 +31,71 @@ namespace Gtm.Application.CommentApp.Query
 
         public async Task<ErrorOr<List<CommentAdminQueryModel>>> Handle(GetAllUnSeenCommentsForAdminQuery request, CancellationToken cancellationToken)
         {
-            var comments = (await _commentRepository.GetAllByQueryAsync(c => c.Status == CommentStatus.خوانده_نشده))
-                    .Select(c => new CommentAdminQueryModel
-                    {
-                        CommentFor = c.CommentFor,
-                        Email = c.Email,
-                        FullName = c.FullName,
-                        HaveChild = false,
-                        Id = c.Id,
-                        OwnerId = c.TargetEntityId,
-                        ParentId = c.ParentId,
-                        Status = c.Status,
-                        Text = c.Text,
-                        UserId = c.AuthorUserId,
-                        WhyRejected = c.WhyRejected,
-                        CommentTitle = ""
-                    }).ToList();
+            // 1. دریافت کامنت‌های خوانده نشده
+            var commentsRaw = await _commentRepository.GetAllByQueryAsync(c => c.Status == CommentStatus.خوانده_نشده, cancellationToken);
 
-            //});
-            foreach (var x in comments)
+            // تبدیل اولیه (Projection)
+            var resultList = commentsRaw.Select(c => new CommentAdminQueryModel
             {
-                x.HaveChild = await _commentRepository.ExistsAsync(c => c.ParentId == x.Id);
-                if (x.UserId > 0)
+                Id = c.Id,
+                CommentFor = c.CommentFor,
+                Email = c.Email,
+                FullName = c.FullName,
+                OwnerId = c.TargetEntityId,
+                ParentId = c.ParentId,
+                Status = c.Status,
+                Text = c.Text,
+                UserId = c.AuthorUserId,
+                WhyRejected = c.WhyRejected,
+                HaveChild = false, // مقدار پیش‌فرض
+                CommentTitle = "", // مقدار پیش‌فرض
+                UserName = ""      // مقدار پیش‌فرض
+            }).ToList();
+
+            // 2. پر کردن اطلاعات تکمیلی (حلقه)
+            foreach (var item in resultList)
+            {
+                // الف) بررسی وجود پاسخ (فرزند)
+                item.HaveChild = await _commentRepository.ExistsAsync(c => c.ParentId == item.Id, cancellationToken);
+
+                // ب) دریافت نام کاربر (اگر عضو سایت باشد)
+                if (item.UserId > 0)
                 {
-                    try
+                    var user = await _userRepository.GetByIdAsync(item.UserId, cancellationToken);
+                    if (user != null)
                     {
-                        var user = await _userRepository.GetByIdAsync(x.UserId);
-                        x.UserName = string.IsNullOrEmpty(user.FullName) ? user.Mobile : user.FullName;
+                        item.UserName = string.IsNullOrEmpty(user.FullName) ? user.Mobile : user.FullName;
                     }
-                    catch (Exception ex) { }
                 }
-                switch (x.CommentFor)
+
+                // ج) دریافت عنوان مقاله یا صفحه
+                switch (item.CommentFor)
                 {
                     case CommentFor.مقاله:
-                        var blog = await _blogRepository.GetByIdAsync(x.OwnerId);
-                        x.CommentTitle = $"نظر برای مقاله  {blog.Title}";
-                        x.CommentTitle = "";
+                        var blog = await _blogRepository.GetByIdAsync(item.OwnerId, cancellationToken);
+                        if (blog != null)
+                        {
+                            item.CommentTitle = $"نظر برای مقاله: {blog.Title}";
+                        }
+                        // خط باگ‌دار حذف شد ✅
                         break;
+
                     case CommentFor.محصول:
+                        // فعلاً خالی
+                        item.CommentTitle = "نظر برای محصول";
                         break;
+
                     case CommentFor.صفحه:
-                        var site = await _sitePageRepository.GetByIdAsync(x.OwnerId);
-                        x.CommentTitle = $"نظر برای صفحه  {site.Title}";
-                        break;
-                    default:
+                        var site = await _sitePageRepository.GetByIdAsync(item.OwnerId, cancellationToken);
+                        if (site != null)
+                        {
+                            item.CommentTitle = $"نظر برای صفحه: {site.Title}";
+                        }
                         break;
                 }
             }
-            return comments;
+
+            return resultList;
         }
     }
 }

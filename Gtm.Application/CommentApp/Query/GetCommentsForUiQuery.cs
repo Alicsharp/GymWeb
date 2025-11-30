@@ -4,6 +4,7 @@ using Gtm.Application.UserApp;
 using Gtm.Contract.CommentContract.Query;
 
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,100 +30,104 @@ namespace Gtm.Application.CommentApp.Query
             _validator = validator;
         }
 
-        public async Task<ErrorOr<CommentUiPaging>> Handle(GetCommentsForUiQuery request,CancellationToken cancellationToken)
+        public async Task<ErrorOr<CommentUiPaging>> Handle(GetCommentsForUiQuery request, CancellationToken cancellationToken)
         {
-            // اعتبارسنجی
+            // 1. اعتبارسنجی
             var validationResult = await _validator.ValidateGetCommentsForUiAsync(
-              request.TargetEntityId,
-              request.commentFor,
-              request.pageId);
+                request.TargetEntityId, request.commentFor, request.pageId);
 
-            if (validationResult.IsError)
-            {
-                return validationResult.Errors;
-            }
+            if (validationResult.IsError) return validationResult.Errors;
 
             try
             {
-                // دریافت نظرات از دیتابیس
-                var comments = await _commentRepository.GetAllByQueryAsync(
-                    c => c.Status == CommentStatus.تایید_شده &&
-                         c.TargetEntityId == request.TargetEntityId &&
-                         c.CommentFor == request.commentFor,
-                    cancellationToken);
-
                 var model = new CommentUiPaging();
 
-                // استفاده از ToList() برای تبدیل به لیست
-                var commentsList = comments.ToList();
-                model.GetData(commentsList.AsQueryable(), request.pageId, 3, 2);
+                // 2. کوئری پایه (فقط برای شمارش و فیلتر اولیه)
+                var baseQuery = _commentRepository.QueryBy(c =>
+                    c.Status == CommentStatus.تایید_شده &&
+                    c.TargetEntityId == request.TargetEntityId &&
+                    c.CommentFor == request.commentFor &&
+                    c.ParentId == null); // فقط ریشه‌ها برای صفحه‌بندی
 
+                // محاسبه تعداد کل و تنظیمات پیجینگ (Count Query)
+                model.GetData(baseQuery, request.pageId, 3, 2); // متد GetData باید روی IQueryable کانت بگیرد
+
+                // 3. دریافت نظرات والد (Paged Root Comments)
+                var rootComments = await baseQuery
+                    .OrderByDescending(c => c.CreateDate)
+                    .Skip(model.Skip)
+                    .Take(model.Take)
+                    .ToListAsync(cancellationToken);
+
+                if (!rootComments.Any())
+                {
+                    model.Comments = new List<CommentUiQueryModel>();
+                    return model;
+                }
+
+                // 4. دریافت پاسخ‌ها (فقط پاسخ‌های مربوط به کامنت‌های این صفحه)
+                var rootIds = rootComments.Select(c => c.Id).ToList();
+                var childComments = await _commentRepository.GetAllByQueryAsync(
+                    c => c.ParentId != null && rootIds.Contains(c.ParentId.Value) && c.Status == CommentStatus.تایید_شده,
+                    cancellationToken);
+
+                // 5. دریافت اطلاعات کاربران (Bulk Load - حل مشکل N+1)
+                var allUserIds = rootComments.Select(c => c.AuthorUserId)
+                    .Concat(childComments.Select(c => c.AuthorUserId))
+                    .Where(id => id > 0)
+                    .Distinct()
+                    .ToList();
+
+                var users = await _userRepository.GetAllByQueryAsync(u => allUserIds.Contains(u.Id), cancellationToken);
+
+                // ساخت دیکشنری برای دسترسی سریع O(1)
+                var userAvatars = users.ToDictionary(
+                    u => u.Id,
+                    u => FileDirectories.UserImageDirectory100 + (u.Avatar ?? "default.png"));
+
+                // 6. مپ کردن نهایی در حافظه
                 model.OwnerId = request.TargetEntityId;
                 model.CommentFor = request.commentFor;
-                model.Comments = new List<CommentUiQueryModel>();
 
-                if (commentsList.Any())
+                model.Comments = rootComments.Select(parent => new CommentUiQueryModel
                 {
-                    // دریافت نظرات والد
-                    var parentComments = commentsList
-                        .Where(r => r.ParentId == null)
-                        .Skip(model.Skip)
-                        .Take(model.Take)
-                        .ToList();
+                    Id = parent.Id,
+                    AuthorUserId = parent.AuthorUserId,
+                    FullName = parent.FullName,
+                    Text = parent.Text,
+                    CreationDate = parent.CreateDate.ToPersianDate(),
+                    Avatar = GetAvatar(parent.AuthorUserId, userAvatars),
 
-                    model.Comments = parentComments
-                        .Select(c => new CommentUiQueryModel
+                    // وصل کردن فرزندان مربوطه
+                    Childs = childComments
+                        .Where(child => child.ParentId == parent.Id)
+                        .OrderBy(child => child.CreateDate)
+                        .Select(child => new CommentUiQueryModel
                         {
-                            Avatar = FileDirectories.UserImageDirectory100 + "default.png",
-                            Childs = commentsList
-                                .Where(r => r.ParentId == c.Id)
-                                .Select(r => new CommentUiQueryModel
-                                {
-                                    Avatar = FileDirectories.UserImageDirectory100 + "default.png",
-                                    Childs = new List<CommentUiQueryModel>(),
-                                    CreationDate = r.CreateDate.ToPersainDate(),
-                                    FullName = r.FullName,
-                                    Id = r.Id,
-                                    Text = r.Text,
-                                    AuthorUserId = r.AuthorUserId
-                                })
-                                .ToList(),
-                            CreationDate = c.CreateDate.ToPersainDate(),
-                            FullName = c.FullName,
-                            Id = c.Id,
-                            AuthorUserId = c.AuthorUserId,
-                            Text = c.Text
-                        })
-                        .ToList();
-
-                    // آپدیت آواتار کاربران
-                    foreach (var comment in model.Comments)
-                    {
-                        if (comment.AuthorUserId > 0)
-                        {
-                            var user = await _userRepository.GetByIdAsync(comment.AuthorUserId);
-                            comment.Avatar = FileDirectories.UserImageDirectory100 + (user?.Avatar ?? "default.png");
-                        }
-
-                        foreach (var child in comment.Childs)
-                        {
-                            if (child.AuthorUserId > 0)
-                            {
-                                var user = await _userRepository.GetByIdAsync(child.AuthorUserId);
-                                child.Avatar = FileDirectories.UserImageDirectory100 + (user?.Avatar ?? "default.png");
-                            }
-                        }
-                    }
-                }
+                            Id = child.Id,
+                            AuthorUserId = child.AuthorUserId,
+                            FullName = child.FullName,
+                            Text = child.Text,
+                            CreationDate = child.CreateDate.ToPersianDate(),
+                            Avatar = GetAvatar(child.AuthorUserId, userAvatars),
+                            Childs = new List<CommentUiQueryModel>()
+                        }).ToList()
+                }).ToList();
 
                 return model;
             }
             catch (Exception ex)
             {
-                return Error.Unexpected(
-                    code: "Comment.FetchError",
-                    description: $"خطا در دریافت نظرات: {ex.Message}");
+                return Error.Failure("Comment.FetchError", $"خطا در دریافت نظرات: {ex.Message}");
             }
+        }
+
+        // متد کمکی برای گرفتن آواتار
+        private string GetAvatar(int userId, Dictionary<int, string> avatars)
+        {
+            if (userId > 0 && avatars.ContainsKey(userId))
+                return avatars[userId];
+            return FileDirectories.UserImageDirectory100 + "default.png";
         }
     }
 

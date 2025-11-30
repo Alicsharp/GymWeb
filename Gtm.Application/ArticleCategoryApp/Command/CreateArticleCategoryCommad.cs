@@ -29,64 +29,64 @@ namespace Gtm.Application.ArticleCategoryApp.Command
 
         public async Task<ErrorOr<bool>> Handle(CreateArticleCategoryCommand request, CancellationToken cancellationToken)
         {
-       
             // 1. اعتبارسنجی DTO
             var validationResult = await _validator.ValidateCreateAsync(request.CategoryDto);
             if (validationResult.IsError)
             {
                 return validationResult.Errors;
             }
-            if (request.CategoryDto.Parent>0)
+
+            // 2. اعتبارسنجی والد (Parent)
+            // چک می‌کنیم اگر والد دارد، آیا معتبر است و آیا قانون "فقط ۲ سطح" رعایت شده؟
+            if (request.CategoryDto.Parent is > 0)
             {
-                var parent = await _articleCategoryRepo.GetByIdAsync(request.CategoryDto.Parent.Value);
+                var parent = await _articleCategoryRepo.GetByIdAsync(request.CategoryDto.Parent.Value, cancellationToken);
+
+                // اگر والد وجود نداشت OR والد خودش فرزند بود (یعنی داریم سطح ۳ می‌سازیم که ممنوع است)
                 if (parent == null || parent.ParentId != null)
                 {
-                    return Error.Validation("Parent.Invalid", "شناسه والد معتبر نیست یا خودش فرزند است.");
+                    return Error.Validation("Parent.Invalid", "شناسه والد معتبر نیست یا دسته‌بندی انتخاب شده خود یک زیردسته است (حداکثر ۲ سطح مجاز است).");
                 }
             }
-            string imageName = await _fileService.UploadImageAsync(request.CategoryDto.ImageFile, FileDirectories.ArticleCategoryImageFolder); // عتبار سنجی نشده
-            if (imageName == null)
-                return Error.Failure("ImapgeUploading", "بارگزاری عکس به شکست خورد");
+
+            // 3. آپلود تصویر
+            string imageName = await _fileService.UploadImageAsync(request.CategoryDto.ImageFile, FileDirectories.ArticleCategoryImageFolder);
+
+            if (string.IsNullOrWhiteSpace(imageName))
+                return Error.Failure("Image.UploadFailed", "بارگزاری عکس با شکست مواجه شد");
+
+            // ریسایز (بهتر است این متدها هم توکن بگیرند اگر امکانش هست)
+            // نکته: اگر اینجا ارور بدهد، عکس اصلی آپلود شده باقی می‌ماند. 
+            // در پروژه‌های حساس اینجا Try-Catch می‌گذاریم تا در صورت خطا در ریسایز، عکس اصلی پاک شود.
             await _fileService.ResizeImageAsync(imageName, FileDirectories.ArticleCategoryImageFolder, 400);
             await _fileService.ResizeImageAsync(imageName, FileDirectories.ArticleCategoryImageFolder, 100);
 
-            // 2. ایجاد موجودیت
+            // 4. ایجاد موجودیت
             var category = new ArticleCategory(
                 title: request.CategoryDto.Title,
                 slug: Utility.Appliation.Slug.SlugUtility.GenerateSlug(request.CategoryDto.Title),
-                imageName:  imageName,
+                imageName: imageName,
                 imageAlt: request.CategoryDto.ImageAlt,
                 parentId: request.CategoryDto.Parent);
 
-            // 3. بررسی تکراری نبودن slug
-          
-            //if (await _articleCategoryRepo.SlugExistsAsync(category.Slug))
-            //{
-            //    return Error.Conflict(
-            //        code: "Category.SlugExists",
-            //        description: "اسلاگ دسته‌بندی تکراری است");
-            //}
-            //if (await _articleCategoryRepo.ExistsAsync(c => c.Slug == category.Slug))
-            //{
-            //    return Error.Conflict(
-            //        code: "Category.SlugExists",
-            //        description: "اسلاگ دسته‌بندی تکراری است");
-            //}
-
-            // 4. ذخیره در دیتابیس
+            // 5. ذخیره در دیتابیس
             await _articleCategoryRepo.AddAsync(category);
-           var Created= await _articleCategoryRepo.SaveChangesAsync(cancellationToken);
-            if(!Created)
+
+            var isSaved = await _articleCategoryRepo.SaveChangesAsync(cancellationToken);
+
+            // 6. مدیریت Rollback (اگر ذخیره نشد، عکس‌ها را پاک کن)
+            if (!isSaved)
             {
-                await _fileService.DeleteImageAsync($"{FileDirectories.ArticleCategoryImageDirectory}{imageName}");
+                await _fileService.DeleteImageAsync($"{FileDirectories.ArticleCategoryImageFolder}{imageName}");
                 await _fileService.DeleteImageAsync($"{FileDirectories.ArticleCategoryImageDirectory400}{imageName}");
                 await _fileService.DeleteImageAsync($"{FileDirectories.ArticleCategoryImageDirectory100}{imageName}");
 
-                return Error.Failure("Category.SaveFailed", "ثبت دسته‌بندی با خطا مواجه شد.");
+                return Error.Failure("Category.SaveFailed", "ثبت دسته‌بندی در پایگاه داده با خطا مواجه شد.");
             }
+
             return true;
         }
 
-      
+
     }
 }

@@ -27,11 +27,11 @@ namespace Gtm.Application.SiteServiceApp.SitePageApp.Query
                     .Select(p => new SitePageAdminQueryModel
                     {
                         Active = p.IsActive,
-                        CreateDate = p.CreateDate.ToPersainDate(),
+                        CreateDate = p.CreateDate.ToPersianDate(),
                         Id = p.Id,
                         Slug = p.Slug,
                         Title = p.Title,
-                        UpdateDate = p.UpdateDate.ToPersainDate()
+                        UpdateDate = p.UpdateDate.ToPersianDate()
                     })
                     .ToListAsync(cancellationToken);
 

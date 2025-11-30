@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Gtm.Application.ArticleApp.Query
 {
-    public record GetForEditArticleQuery(int Id):IRequest<ErrorOr<UpdateArticleDto>>;
+    public record GetForEditArticleQuery(int Id) : IRequest<ErrorOr<UpdateArticleDto>>;
     public class GetForEditArticleQueryHandler : IRequestHandler<GetForEditArticleQuery, ErrorOr<UpdateArticleDto>>
     {
         private readonly IArticleRepo _articleRepo;
@@ -24,16 +24,23 @@ namespace Gtm.Application.ArticleApp.Query
 
         public async Task<ErrorOr<UpdateArticleDto>> Handle(GetForEditArticleQuery request, CancellationToken cancellationToken)
         {
-            var validationResults= await _articleValidator.ValidateIdAsync(request.Id); 
-            if(validationResults.IsError)
+            // 1. اعتبارسنجی آیدی
+            var validationResults = await _articleValidator.ValidateIdAsync(request.Id);
+            if (validationResults.IsError)
             {
                 return validationResults.Errors;
             }
-            var entity= await _articleRepo.GetByIdAsync(request.Id);
-            if(entity == null)
+
+            // 2. دریافت از دیتابیس (با توکن)
+            var entity = await _articleRepo.GetByIdAsync(request.Id, cancellationToken); // <--- توکن اضافه شد
+
+            // 3. گارد کلاز (اگر پیدا نشد)
+            if (entity == null)
             {
-                return Error.NotFound("Article", "مقاله مورد نظر یافت نشد");
+                return Error.NotFound("Article.NotFound", "مقاله مورد نظر یافت نشد");
             }
+
+            // 4. مپ کردن به DTO
             return new UpdateArticleDto
             {
                 Id = entity.Id,
@@ -45,7 +52,7 @@ namespace Gtm.Application.ArticleApp.Query
                 ShortDescription = entity.ShortDescription,
                 Slug = entity.Slug,
                 Title = entity.Title,
-                Writer= entity.Writer,
+                Writer = entity.Writer,
             };
         }
     }

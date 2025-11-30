@@ -34,7 +34,7 @@ namespace Gtm.InfraStructure.RepoImple.EmailRepo
         //            Id = e.Id,
         //            Email = e.Email,
         //            Status = e.Status,
-        //            CreateDate = e.CreateDate.ToPersainDate()
+        //            CreateDate = e.CreateDate.ToPersianDate()
         //        })
         //        .ToListAsync();
         //}

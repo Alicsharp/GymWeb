@@ -57,7 +57,7 @@ namespace Gtm.InfraStructure.RepoImple.StoreRepo
                     .Take(model.Take)
                     .Select(s => new StoreUserPanelQueryModel
                     {
-                        CreationDate = s.CreateDate.ToPersainDate(),
+                        CreationDate = s.CreateDate.ToPersianDate(),
                         Id = s.Id,
                         SellerId = s.SellerId,
                         SellerName = ""

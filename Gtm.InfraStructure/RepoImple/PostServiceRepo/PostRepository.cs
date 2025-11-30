@@ -28,7 +28,7 @@ namespace Gtm.InfraStructure.RepoImple.PostServiceRepo
                     Description = p.Description,
                     Status = p.Status,
                     Active = p.Active,
-                    CreationDate = p.CreateDate.ToPersainDate(), // استفاده از متد توسعه‌ای برای تاریخ فارسی
+                    CreationDate = p.CreateDate.ToPersianDate(), // استفاده از متد توسعه‌ای برای تاریخ فارسی
                     CityPricePlus = p.CityPricePlus,
                     InsideStatePricePlus = p.InsideStatePricePlus,
                     StateCenterPricePlus = p.StateCenterPricePlus,

@@ -24,7 +24,7 @@ namespace Gtm.Application.EmailServiceApp.MessageUserApp.Query
             {
                 AnswerEmail = m.AnswerEmail,
                 AnswerSms = m.AnswerSms,
-                CreationDate = m.CreateDate.ToPersainDate(),
+                CreationDate = m.CreateDate.ToPersianDate(),
                 Email = m.Email,
                 FullName = m.FullName,
                 Id = request.id,

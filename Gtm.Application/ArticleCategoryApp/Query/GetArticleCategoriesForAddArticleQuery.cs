@@ -21,14 +21,16 @@ namespace Gtm.Application.ArticleCategoryApp.Query
             _articleCategoryRepo = articleCategoryRepo;
         }
 
-        public async Task<ErrorOr<List<ArticleCategoryForAddArticleQueryModel>>> Handle(GetArticleCategoriesForAddArticleQuery request,CancellationToken cancellationToken)
+        public async Task<ErrorOr<List<ArticleCategoryForAddArticleQueryModel>>> Handle(GetArticleCategoriesForAddArticleQuery request, CancellationToken cancellationToken)
         {
-            var categories = await _articleCategoryRepo.GetAllQueryable().Include(c => c.Children)
-                .Where(c => c.ParentId == null) // فقط دسته‌بندی‌های اصلی
+            var categories = await _articleCategoryRepo.GetAllQueryable()
+                // .Include(...)  <-- حذف شد چون Select خودش کار را انجام می‌دهد
+                .Where(c => c.ParentId == null) // فقط ریشه‌ها
                 .Select(c => new ArticleCategoryForAddArticleQueryModel
                 {
                     Id = c.Id,
                     Title = c.Title,
+                    // دریافت فرزندان به صورت خودکار توسط Projection
                     SubCategories = c.Children.Select(sc => new ArticleCategoryForAddArticleQueryModel
                     {
                         Id = sc.Id,
@@ -36,7 +38,6 @@ namespace Gtm.Application.ArticleCategoryApp.Query
                     }).ToList()
                 })
                 .ToListAsync(cancellationToken);
-
 
             return categories;
         }

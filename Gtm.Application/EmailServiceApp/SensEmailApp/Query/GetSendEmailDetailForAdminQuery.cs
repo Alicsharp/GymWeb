@@ -20,7 +20,7 @@ namespace Gtm.Application.EmailServiceApp.SensEmailApp.Query
             var email = await _sendEmailRepository.GetByIdAsync(request.Id);
             return new SendEmailDetailQueryModel()
             {
-                CreationDate = email.CreateDate.ToPersainDate(),
+                CreationDate = email.CreateDate.ToPersianDate(),
                 Id = email.Id,
                 Text = email.Text,
                 Title = email.Title

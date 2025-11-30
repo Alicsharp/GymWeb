@@ -30,51 +30,63 @@ namespace Gtm.Application.ArticleApp.Query
 
         public async Task<ErrorOr<AdminArticlesPageQueryModel>> Handle(GetArticleForAdminQuery request, CancellationToken cancellationToken)
         {
-            var validatinResults = await _articleValidator.ValidateIdAsync(request.id);
-            if(validatinResults.IsError)
+            // 1. اعتبارسنجی (آیدی نباید منفی باشد. صفر مجاز است چون یعنی "همه")
+            if (request.id < 0)
             {
-              return  validatinResults.Errors;
+                return Error.Validation("Id.Invalid", "شناسه نامعتبر است");
             }
-           
-        
-               var Articles= await  _articleRepo.GetAllQueryable().AsNoTracking().Select(b=> new ArticleQueryModel
-                {
-                   Active = b.IsActive,
-                   CategoryId = b.SubCategoryId > 0 ? b.SubCategoryId : b.CategoryId,
-                   CategoryTitle = "",
-                   CreationDate = b.CreateDate.ToPersainDate(),
-                   Id = b.Id,
-                   ImageName = $"{FileDirectories.ArticleImageDirectory100}{b.ImageName}",
-                   Title = b.Title,
-                   UpdateDate = b.UpdateDate.ToPersainDate(),
-                   UserId = b.UserId,
-                   VisitCount = b.VisitCount,
-                   Writer = b.Writer
-               }).ToListAsync();
 
-               string pageTitle;
-              if (request.id == 0)
-              {
+            // 2. ساخت کوئری اولیه (هنوز به دیتابیس وصل نشده)
+            var query = _articleRepo.GetAllQueryable().AsNoTracking();
+
+            // 3. اعمال فیلتر (اگر آیدی خاصی مد نظر بود)
+            if (request.id > 0)
+            {
+                // فقط مقالاتی که در این دسته یا زیردسته هستند
+                query = query.Where(b => b.CategoryId == request.id || b.SubCategoryId == request.id);
+            }
+
+            // 4. انتخاب فیلدها (Projection) و اجرا
+            var articles = await query.Select(b => new ArticleQueryModel
+            {
+                Active = b.IsActive,
+                CategoryId = b.SubCategoryId > 0 ? b.SubCategoryId : b.CategoryId,
+                CategoryTitle = "", // اینجا اگر لازم بود باید از Include استفاده کنی
+                CreationDate = b.CreateDate.ToPersianDate(),
+                Id = b.Id,
+                ImageName = $"{FileDirectories.ArticleImageDirectory100}{b.ImageName}",
+                Title = b.Title,
+                UpdateDate = b.UpdateDate.ToPersianDate(),
+                UserId = b.UserId,
+                VisitCount = b.VisitCount,
+                Writer = b.Writer
+            }).ToListAsync(cancellationToken); // توکن را پاس بده
+
+            // 5. تعیین عنوان صفحه
+            string pageTitle;
+            if (request.id == 0)
+            {
                 pageTitle = "لیست تمام مقالات";
-               }
-             else
-              {
-                var parentArticle = await _articleCategoryRepo.GetByIdAsync(request.id);
-                pageTitle = string.IsNullOrEmpty(parentArticle.Title)
+            }
+            else
+            {
+                var category = await _articleCategoryRepo.GetByIdAsync(request.id);
+
+                // گارد کلاز: اگر دسته‌بندی پیدا نشد
+                if (category is null)
+                    return Error.NotFound("Category.NotFound", "دسته‌بندی یافت نشد");
+
+                pageTitle = string.IsNullOrEmpty(category.Title)
                     ? "لیست مقالات این دسته‌بندی"
-                    : $"لیست زیر دسته‌های {parentArticle.Title}";
-                }
+                    : $"لیست زیر دسته‌های {category.Title}";
+            }
 
             return new AdminArticlesPageQueryModel
             {
                 CategoryId = request.id,
                 PageTitle = pageTitle,
-                Article = Articles
+                Article = articles
             };
-
- 
-
-        }      
-         
+        }
     }
 }

@@ -69,7 +69,7 @@ namespace Gtm.Application.TransactionServiceApp.Query
                     .Take(model.Take)
                     .Select(t => new TransactionUserPanelQueryModel
                     {
-                        CretionDate = t.CreateDate.ToPersainDate(),
+                        CretionDate = t.CreateDate.ToPersianDate(),
                         Id = t.Id,
                         OwnerId = t.OwnerId,
                         Portal = t.Portal,

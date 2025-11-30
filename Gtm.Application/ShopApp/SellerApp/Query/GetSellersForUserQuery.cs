@@ -47,7 +47,7 @@ namespace Gtm.Application.ShopApp.SellerApp.Query
                     ImageAccept = r.ImageAccept,
                     CityId = r.CityId,
                     CityName = "", // مقدار موقت
-                    CreationDate = r.CreateDate.ToPersainDate(),
+                    CreationDate = r.CreateDate.ToPersianDate(),
                     Id = r.Id,
                     ImageName = r.ImageName,
                     Phone1 = r.Phone1,

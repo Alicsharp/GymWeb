@@ -42,7 +42,7 @@ namespace Gtm.Application.WalletServiceApp.Query
                 model.Wallets = result.Skip(model.Skip).Take(model.Take)
                     .Select(w => new WalletUserPanelQueryModel
                     {
-                        CreationDate = w.CreateDate.ToPersainDate(),
+                        CreationDate = w.CreateDate.ToPersianDate(),
                         Description = w.Description,
                         Id = w.Id,
                         Price = w.Price,

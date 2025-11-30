@@ -29,10 +29,10 @@ namespace Gtm.Application.DiscountsServiceApp.OrderDiscountsServiceApp.Query
                 return Error.NotFound(description: $"تخفیفی با کد {request.Code} یافت نشد.");
 
             if (discount.StartDate.Date > DateTime.Now.Date)
-                return Error.Validation(description: $"تاریخ شروع تخفیف {request.Code} از {DateTime.Now.ToPersainDate()} است.");
+                return Error.Validation(description: $"تاریخ شروع تخفیف {request.Code} از {DateTime.Now.ToPersianDate()} است.");
 
             if (discount.EndDate.Date < DateTime.Now.Date)
-                return Error.Validation(description: $"تخفیف {request.Code} در تاریخ {DateTime.Now.ToPersainDate()} به اتمام رسیده است.");
+                return Error.Validation(description: $"تخفیف {request.Code} در تاریخ {DateTime.Now.ToPersianDate()} به اتمام رسیده است.");
 
             if (discount.Use >= discount.Count)
                 return Error.Validation(description: $"تعداد استفاده از کد تخفیف {request.Code} به اتمام رسیده است.");

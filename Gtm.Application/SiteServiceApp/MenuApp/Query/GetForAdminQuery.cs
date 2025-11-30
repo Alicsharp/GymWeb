@@ -56,7 +56,7 @@ namespace Gtm.Application.SiteServiceApp.MenuApp.Query
                     .Select(m => new MenuForAdminQueryModel
                     {
                         Active = m.Active,
-                        CreationDate = m.CreateDate.ToPersainDate(),
+                        CreationDate = m.CreateDate.ToPersianDate(),
                         Id = m.Id,
                         Number = m.Number,
                         Status = m.Status,

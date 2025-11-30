@@ -22,21 +22,32 @@ namespace Gtm.Application.ArticleCategoryApp.Command
 
         public async Task<ErrorOr<Success>> Handle(ArticleCategoryActiveChangeCommand request, CancellationToken cancellationToken)
         {
-            var validationResults= await _articleCategoryValidator.ValidateIdAsync(request.Id); 
-            if(validationResults.IsError)
+            // 1. اعتبارسنجی
+            var validationResults = await _articleCategoryValidator.ValidateIdAsync(request.Id);
+            if (validationResults.IsError)
             {
                 return validationResults.Errors;
             }
-            var entity=await _articleCategoryRepo.GetByIdAsync(request.Id);
-            if(entity != null)
-            {
-                entity.ActivationChange();
-                var result= await _articleCategoryRepo.SaveChangesAsync(cancellationToken);
-                if(result ==true)  
-                return Result.Success;
-                return Error.Failure("ActiveChange", "عملیات فعال یا غیر فعال سازی شکست خورد");
 
+            // 2. دریافت از دیتابیس (با توکن)
+            var entity = await _articleCategoryRepo.GetByIdAsync(request.Id, cancellationToken);
+
+            // 3. اگر پیدا نشد (Guard Clause)
+            if (entity is null)
+            {
+                return Error.NotFound("ArticleCategory.NotFound", "دسته‌بندی مورد نظر یافت نشد.");
             }
+
+            // 4. تغییر وضعیت
+            entity.ActivationChange();
+
+            // 5. ذخیره
+            var result = await _articleCategoryRepo.SaveChangesAsync(cancellationToken);
+            if (result)
+            {
+                return Result.Success;
+            }
+
             return Error.Failure("ActiveChange", "عملیات فعال یا غیر فعال سازی شکست خورد");
         }
     }

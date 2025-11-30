@@ -36,7 +36,7 @@ namespace Gtm.Application.AdminDashbord.Query
             {
                 FullName = string.IsNullOrEmpty(u.FullName) ? u.Mobile : u.FullName,
                 ImageName = FileDirectories.UserImageDirectory100 + u.Avatar,
-                RegisterDate = u.CreateDate.ToPersainDate(),
+                RegisterDate = u.CreateDate.ToPersianDate(),
                 UserId = u.Id
             }).ToList();
 

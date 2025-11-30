@@ -59,13 +59,15 @@ namespace Gtm.InfraStructure.RepoImple.ArticleRepo
         // Optional: Additional methods can be added here
 
 
-        public async Task<Article> GetBySlugAsync(string slug)
+        public async Task<Article> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
         {
-            return await _dbContext.Articles.FirstOrDefaultAsync(c => c.Slug == slug);
+            // حالا توکن را به عنوان آرگومان دوم به متد EF Core می‌دهیم
+            return await _dbContext.Articles
+                .FirstOrDefaultAsync(c => c.Slug == slug, cancellationToken);
         }
         /// <summary>
-         /// پیاده‌سازی متد اختصاصی محاسبه مجموع بازدیدها
-         /// </summary>
+        /// پیاده‌سازی متد اختصاصی محاسبه مجموع بازدیدها
+        /// </summary>
         public async Task<int> GetTotalVisitCountAsync(CancellationToken cancellationToken = default)
         {
             // 2. از متد Query() (که در IRepository شما بود) استفاده می‌کنیم

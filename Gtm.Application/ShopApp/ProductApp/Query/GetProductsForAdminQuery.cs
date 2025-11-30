@@ -85,8 +85,8 @@ namespace Gtm.Application.ShopApp.ProductApp.Query
                     {
                         Active = p.IsActive,
                         ImageAlt = p.ImageAlt,
-                        CreationDate = p.CreateDate.ToPersainDate(),
-                        UpdateDate = p.UpdateDate.ToPersainDate(),
+                        CreationDate = p.CreateDate.ToPersianDate(),
+                        UpdateDate = p.UpdateDate.ToPersianDate(),
                         Id = p.Id,
                         ImageName = p.ImageName,
                         Slug = p.Slug,

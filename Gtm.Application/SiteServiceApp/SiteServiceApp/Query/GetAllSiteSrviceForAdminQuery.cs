@@ -30,7 +30,7 @@ namespace Gtm.Application.SiteServiceApp.SiteServiceApp.Query
                     s.Title,
                     FileDirectories.ServiceImageDirectory100 + s.ImageName,
                     s.ImageAlt,
-                    s.CreateDate.ToPersainDate(), // فرض بر این است که متد ToPersianDate() وجود دارد.
+                    s.CreateDate.ToPersianDate(), // فرض بر این است که متد ToPersianDate() وجود دارد.
                     s.Active
                 )).ToList();
 

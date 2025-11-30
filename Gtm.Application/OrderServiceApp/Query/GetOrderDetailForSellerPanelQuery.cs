@@ -80,8 +80,8 @@ namespace Gtm.Application.OrderServiceApp.Query
                 Price = orderSeller.Price,
                 SellerId = orderSeller.SellerId,
                 Status = orderSeller.Status,
-                CreationDate = orderSeller.Order.CreateDate.ToPersainDate(),
-                UpdateDate = orderSeller.Order.UpdateDate.ToPersainDate(),
+                CreationDate = orderSeller.Order.CreateDate.ToPersianDate(),
+                UpdateDate = orderSeller.Order.UpdateDate.ToPersianDate(),
 
                 // 5a. مپ کردن آدرس
                 OrderAddress = new() // (فرض بر وجود این DTO)

@@ -57,7 +57,7 @@ namespace Gtm.Application.SiteServiceApp.ImageSiteApp.Query
                     .Take(model.Take)
                     .Select(x => new ImageSiteAdminQueryModel
                     {
-                        CreateDate = x.CreateDate.ToPersainDate(),
+                        CreateDate = x.CreateDate.ToPersianDate(),
                         Id = x.Id,
                         ImageName =  x.ImageName,
                         Title = x.Title

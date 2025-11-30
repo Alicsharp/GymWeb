@@ -33,7 +33,7 @@ namespace Gtm.Application.TransactionServiceApp.Command
             {
                 return validationResult.Errors;
             }
-            request.Command.Authority = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
+            
             // ایجاد تراکنش
             var transaction = new Transaction(
                 request.Command.UserId,
@@ -48,6 +48,7 @@ namespace Gtm.Application.TransactionServiceApp.Command
 
             if (transactionId > 0)
             {
+
                 return transactionId;
             }
 

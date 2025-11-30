@@ -31,7 +31,7 @@ namespace Gtm.Application.EmailServiceApp.SensEmailApp.Query
                     .OrderByDescending(x => x.Id)
                     .Select(x => new SendEmailQueryModel
                     {
-                        CreationDate = x.CreateDate.ToPersainDate(),
+                        CreationDate = x.CreateDate.ToPersianDate(),
                         Id = x.Id,
                         Title = x.Title
                     });

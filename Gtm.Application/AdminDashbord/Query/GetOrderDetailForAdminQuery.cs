@@ -56,7 +56,7 @@ namespace Gtm.Application.AdminDashbord.Query
                 PaymentPriceSeller = order.PaymentPriceSeller,
                 PostPrice = order.PostPrice,
                 Price = order.Price,
-                UpdateDate = order.UpdateDate.ToPersainDate(),
+                UpdateDate = order.UpdateDate.ToPersianDate(),
                 User = new(),
                 OrderAddress = null
             };

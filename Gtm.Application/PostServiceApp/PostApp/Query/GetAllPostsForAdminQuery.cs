@@ -41,7 +41,7 @@ namespace Gtm.Application.PostServiceApp.PostApp.Query
                 var result = posts.Select(p => new PostAdminQueryModel
                 {
                     Active = p.Active,
-                    CreationDate = p.CreateDate.ToPersainDate(),  
+                    CreationDate = p.CreateDate.ToPersianDate(),  
                     Id = p.Id,
                     InsideCity = p.InsideCity,
                     OutsideCity = p.OutSideCity,

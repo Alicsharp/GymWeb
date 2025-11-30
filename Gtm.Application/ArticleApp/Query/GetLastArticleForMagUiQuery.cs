@@ -14,7 +14,7 @@ namespace Gtm.Application.ArticleApp.Query
 
     public class GetLastBlogForMagUiQueryHandler : IRequestHandler<GetLastArticleForMagUiQuery, ErrorOr<List<LastArticleForMagQueryModel>>>
     {
-        private readonly IArticleRepo  _articleRepo;
+        private readonly IArticleRepo _articleRepo;
 
         public GetLastBlogForMagUiQueryHandler(IArticleRepo articleRepo)
         {
@@ -24,14 +24,13 @@ namespace Gtm.Application.ArticleApp.Query
         public async Task<ErrorOr<List<LastArticleForMagQueryModel>>> Handle(GetLastArticleForMagUiQuery request, CancellationToken cancellationToken)
         {
             var blogs = await _articleRepo
-           .QueryBy(b => b.IsActive)
-           .OrderByDescending(b => b.CreateDate)
-           .Take(5)
-           .Select(b => new LastArticleForMagQueryModel(b.Slug, b.Title))
-           .ToListAsync(); // اگه token داری
+               .QueryBy(b => b.IsActive)
+               .OrderByDescending(b => b.CreateDate) // جدیدترین‌ها اول
+               .Take(5) // فقط ۵ تا
+               .Select(b => new LastArticleForMagQueryModel(b.Slug, b.Title))
+               .ToListAsync(cancellationToken); // ✅ پاس دادن توکن
 
             return blogs;
         }
     }
-
 }

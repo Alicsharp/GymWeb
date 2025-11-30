@@ -24,19 +24,45 @@ namespace Gtm.Application.CommentApp.Command
 
         public async Task<ErrorOr<Success>> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
         {
+            // 1. اعتبارسنجی ورودی‌ها
             var validationResults = await _commentValidator.ValidateCreateAsync(request.Command);
-            if(validationResults.IsError)
+            if (validationResults.IsError)
             {
                 return validationResults.Errors;
             }
-            Comment newComment = new Comment(request.Command.UserId, request.Command.OwnerId, request.Command.CommentFor, request.Command.FullName, request.Command.Email, request.Command.Text, request.Command.ParentId);
-             await _commentRepo.AddAsync(newComment);   
-           var res= await _commentRepo.SaveChangesAsync(cancellationToken);
-            if (res == false)
-                return Error.Failure("AddCommnet", "اضافه کردن کامنت به مشکل برخورد");
+
+            // 2. بررسی وجود کامنت والد (اگر پاسخ به نظر دیگری است) 
+            if (request.Command.ParentId is > 0)
+            {
+                // فرض بر این است که متد GetByIdAsync در ریپازیتوری کامنت وجود دارد
+                // اگر کامنت پدر پیدا نشد، نباید اجازه ثبت داد
+                var parentComment = await _commentRepo.GetByIdAsync(request.Command.ParentId.Value, cancellationToken);
+                if (parentComment is null)
+                {
+                    return Error.NotFound("Comment.ParentNotFound", "نظری که می‌خواهید به آن پاسخ دهید یافت نشد.");
+                }
+            }
+
+            // 3. ساخت موجودیت
+            Comment newComment = new Comment(
+                authorUserId: request.Command.UserId,
+                targetEntityId: request.Command.OwnerId,
+                commentFor: request.Command.CommentFor,
+                fullName: request.Command.FullName,
+                email: request.Command.Email,
+                text: request.Command.Text,
+                parentId: request.Command.ParentId);
+
+            // 4. افزودن و ذخیره
+            await _commentRepo.AddAsync(newComment);
+
+            var isSaved = await _commentRepo.SaveChangesAsync(cancellationToken);
+            if (!isSaved)
+            {
+                return Error.Failure("Comment.SaveFailed", "ثبت نظر با خطا مواجه شد.");
+            }
 
             return Result.Success;
-
         }
     }
 }
